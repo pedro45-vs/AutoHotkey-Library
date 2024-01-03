@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description Controle RichEdit para criação e exibição de RichText
  * @author Pedro Henrique C. Xavier
- * @date 2023/12/25
- * @version 2.0.10
+ * @date 2024/01/03
+ * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -220,9 +220,11 @@ class RichEdit
      * @param {string} str texto separado por quebra de linha
      * @param {number} color1 cor a ser usada
      * @param {number} color2 cor a ser usada
+     * @returns {object} objeto tipo Range
      */
     ColorLines(str, color1 := this.LightGray, color2 := this.White)
     {
+        end := this.end
         loop parse str, '`n', '`r'
         {
             if A_Index & 1
@@ -230,6 +232,7 @@ class RichEdit
             else
                 this.text(A_LoopField '`n').BackColor := color1
         }
+        return rpt.ItextDocument.Range(end, this.End)
     }
     /**
      * Adiciona as paradas de tabulação e o alinhamento
@@ -359,7 +362,7 @@ class RichEdit
 
             rng.text := field, rng.Move(tomCell := 12, 1)
         }
-        this.End += rng.End
+        this.End += rng.End + 2
         return rng
     }
     /**

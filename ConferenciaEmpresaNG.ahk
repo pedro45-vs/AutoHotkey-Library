@@ -34,6 +34,8 @@ ConferenciaEmpresaNG()
         {
             cnpj := RegExReplace(col[3], '\D'), insc := RegExReplace(col[20], '[\.\-]')
             dados[cnpj] := { nome: trim(col[5]), insc: insc, regime: col[46] }
+            if not dados[cnpj].regime
+                MsgBox('A empresa ' dados[cnpj].nome ' não tem regime definido`nO script será encerrado.', 'ConferenciaEmpresaNG()', 'O IconX'), ExitApp()
         }
     }
     ; Insere os dados da Associação para poder sair impresso na lista mesmo não estando cadastrado no NG
