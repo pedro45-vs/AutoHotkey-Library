@@ -2,7 +2,6 @@
  * @description Mostra uma GuiEdit com o conteúdo da variável.
  * Se for um Objeto, Array ou Map usará a lib json para mostrar.
  * Útil para mostrar relatórios sem precisar salvar em arquivo.
- * @file report.ahk
  * @author Pedro Henrique C Xavier
  * @date 2023/09/26
  * @version 2.0.10

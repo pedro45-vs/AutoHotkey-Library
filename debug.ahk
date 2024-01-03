@@ -30,7 +30,7 @@ Debug(var)
     Rich := RichEdit(GuiD, 'xm vScroll hScroll w300 h200 Border')
     Rich.SetMargins(10, 10)
     Rich.SetBkgnColor(0xF0F0F0)
-    Rich.CriarMenu()
+    Rich.ShowMenu()
     fon := Rich.ITextFont
     fon.Bold := Rich.tomTrue
 
@@ -95,6 +95,14 @@ Debug(var)
         fon.Size := 16, fon.Underline := fon.Bold := Rich.tomTrue
         color := Rich.Color['9BCAEF']
 
+        if IsSet(itens)
+        {
+            Rich.ItextDocument.DefaultTabStop := 15
+            Rich.Text('Itens:').Font := fon
+            Rich.Space(4)
+            Rich.Text(itens).Name := 'Consolas'
+            Rich.Space(14)
+        }
         if Prop.Length
         {
             cell := {CellWidth: [200, 120, 120]}
@@ -117,15 +125,6 @@ Debug(var)
             Rich.InsertRow(['Description', 'IsBuiltIn', 'IsVariadic', 'MinParams', 'MaxParams'], cab)
             for arr in Methods
                 Rich.InsertRow(arr, cell)
-            Rich.Space(14)
-        }
-        if IsSet(itens)
-        {
-            Rich.ItextDocument.DefaultTabStop := 15
-            Rich.Text('Itens:').Font := fon
-            Rich.Space(4)
-            Rich.Text(itens).Name := 'Consolas'
-            Rich.Space(14)
         }
     }
     /**

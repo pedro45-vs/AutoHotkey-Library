@@ -14,7 +14,7 @@ class RichEditMenu
      * Ativa o Menu de contexto;
      * Cria a Gui da Caixa de diálogo para pesquisa.
      */
-    CriarMenu()
+    ShowMenu()
     {
         this.Ctrl.OnEvent('ContextMenu', this.RichContextMenu.Bind(this))
 
@@ -24,15 +24,15 @@ class RichEditMenu
         GuiP.OnEvent('Escape', (*) => GuiP.Hide())
         GuiP.SetFont(, 'Segoe UI')
         GuiP.AddEdit('vPesq w280')
-        GuiP.AddButton('w110 x+10 default', 'Localizar Próxima').OnEvent('Click', this.Localizar.Bind(, GuiP, this))
+        GuiP.AddButton('w110 x+10 default', 'Localizar Próxima').OnEvent('Click', this.Search.Bind(, GuiP, this))
         GuiP.AddCheckbox('vCheck w280 xm', 'Diferenciar maíusculas de minúsculas')
-        GuiP.AddButton('w110 x+10', 'Localizar Anterior').OnEvent('Click', this.Localizar.Bind(, GuiP, this))
+        GuiP.AddButton('w110 x+10', 'Localizar Anterior').OnEvent('Click', this.Search.Bind(, GuiP, this))
 
         ; Atalhos personalizados para alguns itens do Menu.
         ; Copiar e Colar já fazem parte do controle RichEdit.
         HotIfWinActive('ahk_id' this.Ctrl.Gui.hwnd)
         Hotkey('^s', (*) => this.SaveDialog())
-        Hotkey('^f', (*) => this.MostrarGuiLocalizar())
+        Hotkey('^f', (*) => this.ShowGuiSearch())
     }
     /**
      * @params {callback}
@@ -45,8 +45,9 @@ class RichEditMenu
         CM.Add('Colar `tCtrl+V', (*)=> Send('^v'))
         CM.Add('Selecionar tudo `tCtrl+A', (*)=> Send('^a'))
         CM.Add()
-        CM.Add('Localizar `tCtrl+F', this.MostrarGuiLocalizar.Bind(this))
+        CM.Add('Localizar `tCtrl+F', this.ShowGuiSearch.Bind(this))
         CM.Add('Salvar `tCtrl+S', this.SaveDialog.Bind(this))
+        CM.Add('Abrir com Wordpad', this.OpenWithWordPad.Bind(this))
         CM.Show()
     }
     /**
@@ -68,7 +69,7 @@ class RichEditMenu
      * @params {callback}
      * Mostra caixa de pesquisa para localizar palavras no controle RichEdit
      */
-    MostrarGuiLocalizar(*)
+    ShowGuiSearch(*)
     {
         this.Ctrl.Gui.GetPos(&X, &Y, &Width, &Height)
         this.GuiP.Show('X ' X + Width / 2 - 218 ' Y ' Y + Height / 2 - 51)
@@ -78,7 +79,7 @@ class RichEditMenu
      * @params {callback}
      * Executa a função de localizar, selecionando a palavra encontrada no controle RichEdit
      */
-    Localizar(GuiObj, Rich, Info)
+    Search(GuiObj, Rich, Info)
     {
         (needle := GuiObj['Pesq'].Text) || Exit()
         case_sense := GuiObj['Check'].Value ? 'On' : 'Locale'
@@ -97,5 +98,15 @@ class RichEditMenu
             MsgBox('Não foi possível localizar', 'Localizar', 'Icon! 4096 T1')
             Rich.occurrence := 0
         }
+    }
+    /**
+     * @params {callback}
+     * Salva um arquivo RTF temporário e o abre com o Wordpad
+     */
+    OpenWithWordPad(*)
+    {
+        FileExist(A_Temp '\temp.rtf') && FileDelete(A_Temp '\temp.rtf')
+        this.ITextDocument.Save(A_Temp '\temp.rtf', tomRTF := 0x1, codePage := 1200)
+        Run Format('"{}" "{}"', 'C:\Program Files (x86)\Windows NT\Accessories\wordpad.exe', A_Temp '\temp.rtf')     
     }
 }
