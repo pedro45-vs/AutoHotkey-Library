@@ -232,7 +232,7 @@ class RichEdit
             else
                 this.text(A_LoopField '`n').BackColor := color1
         }
-        return rpt.ItextDocument.Range(end, this.End)
+        return this.ItextDocument.Range(end, this.End)
     }
     /**
      * Adiciona as paradas de tabulação e o alinhamento
