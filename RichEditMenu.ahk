@@ -2,7 +2,7 @@
  * @description Cria Menu de Contexto para o RichEdit com diversas funções
  * Para criar o menu, inclua essa lib e chame o método Instancia.CriarMenu()
  * @author Pedro Henrique C. Xavier
- * @date 2023/12/21
+ * @date 2024/01/03
  * @version 2.0.10
  ***********************************************************************/
 
