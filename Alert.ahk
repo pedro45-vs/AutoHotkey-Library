@@ -1,8 +1,8 @@
 ﻿/************************************************************************
 * @description Exibe uma janela de notificação com o texto desejado
 * @author Pedro Henrique C. Xavier
-* @date 2023-11-13
-* @version 2.1-alpha.7
+* @date 2024/01/05
+* @version 2.1-alpha.8
 ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -21,10 +21,10 @@ Alert(string_alert, options := '')
     ; Determina o esquema de cores para ser usado
     switch (RegExMatch(options, '[a-zA-Z]{2,}', &theme) ? theme[0] : 'info'), 'Locale'
     {
-        case 'ok':       cback := 'D1E7DD', ctext := 'c23961D', strTitu := '✔ OK'
-        case 'info':     cback := '9ECFE9', ctext := 'c043A62', strTitu := 'ℹ️ INFO'
-        case 'alerta':   cback := 'FFF3CD', ctext := 'cCAA202', strTitu := '⚠ ALERTA'
-        case 'erro':     cback := 'FEE2E2', ctext := 'cCC0000', strTitu := '☠ ERRO'
+        case 'ok'      : cback := 'D1E7DD', ctext := 'c23961D', strTitu := '✔ OK'
+        case 'info'    : cback := '9ECFE9', ctext := 'c043A62', strTitu := 'ℹ️ INFO'
+        case 'alerta'  : cback := 'FFF3CD', ctext := 'cCAA202', strTitu := '⚠ ALERTA'
+        case 'erro'    : cback := 'FEE2E2', ctext := 'cCC0000', strTitu := '☠ ERRO'
         case 'lembrete': cback := 'FFFFFF', ctext := 'c495057', strTitu := '⏰ LEMBRETE'
     }
 
@@ -59,8 +59,8 @@ Alert(string_alert, options := '')
 
     SumirAosPoucos()
     {
-        Loop (N := 0xFF) - 0xEE
-            WinSetTransparent(N += -0xF, GuiA), Sleep(30)
+        Loop (N := 255) - 238
+            WinSetTransparent(N += -15, GuiA), Sleep(30)
         GuiA.Destroy()
     }
 
@@ -71,15 +71,13 @@ Alert(string_alert, options := '')
         GuiA.Show('NoActivate')
         Y := SysGet(62) - 24
         
-        Loop (s_height)
+        Loop s_height
             GuiA.Move(, Y--)
     }
 
     ; Essa função permite que se possa mover a janela clicando em qualquer posição
-    if A_AhkVersion ~= '2.1'
+    if A_AhkVersion ~= '^2.1'
         GuiA.OnMessage(0x201, (*) => PostMessage(0xA1, 2, , , GuiA.hwnd))
-    ;else
-    ;    OnMessage(0x201, (wParam, lParam, msg, hwnd) => PostMessage(0xA1, 2, , , hwnd))
 
     ; Calcula o valor necessário para que a GUI fique entre o tamanho mínimo e o máximo
     MinMax(Value, ValueMin, ValueMax) => Max(ValueMin, Min(ValueMax, Value))

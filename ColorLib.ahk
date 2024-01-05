@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+﻿
 
 /**
  * Converte uma string RRGGBB para o valor correspondente
@@ -17,7 +17,7 @@ ColorHex(str) => Integer('0x' . SubStr(str, 5, 2) . SubStr(str, 3, 2) . SubStr(s
 RGB(r, g, b) => b << 16 | g << 8 | r
 
 
-hsl(h, s, l)
+hsl(h, s, l) 
 {
     l /= 100
     a := s * Min(l, 1 - l) / 100
@@ -30,7 +30,7 @@ hsl(h, s, l)
     return f(4) << 16 | f(8) << 8 | f(0)
 }
 
-hslToHex(h, s, l)
+hslToHex(h, s, l) 
 {
     l /= 100
     a := s * Min(l, 1 - l) / 100

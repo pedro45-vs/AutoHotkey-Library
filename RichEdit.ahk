@@ -1,7 +1,7 @@
 ﻿/************************************************************************
  * @description Controle RichEdit para criação e exibição de RichText
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/03
+ * @date 2024/01/05
  * @version 2.0.11
  ***********************************************************************/
 
@@ -314,7 +314,7 @@ class RichEdit
      */
     InsertRow(arr_str, obj := {})
     {
-        this.Ctrl.Move(, , 60)
+        this.Ctrl.Move(, , 60), arr_str.Default := ''
         rng := this.ITextDocument.Range(this.End, this.End)
         rng.InsertTable(arr_str.length, 1, 0)
         rng.Move(tomTable := 15, -1)
@@ -360,7 +360,7 @@ class RichEdit
             if obj.HasProp('Alignment')
                 rng.Alignment := (obj.Alignment is Array) ? obj.Alignment[A_Index] : obj.Alignment
 
-            rng.text := field, rng.Move(tomCell := 12, 1)
+            rng.text := field ?? '', rng.Move(tomCell := 12, 1)
         }
         this.End += rng.End + 2
         return rng
