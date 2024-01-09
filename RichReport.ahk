@@ -8,7 +8,6 @@
 #Requires AutoHotkey v2.0
 #Include %A_LineFile% \..\RichEdit.ahk
 #Include %A_LineFile% \..\RichEditMenu.ahk
-#Include %A_LineFile% \..\RichTable.ahk
 
 class RichReport extends RichEdit
 {

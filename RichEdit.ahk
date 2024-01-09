@@ -181,6 +181,22 @@ class RichEdit
         return rng
     }
     /**
+     * Insere um cabeçalho pré-formatado
+     * @param str Texto a ser exibido
+     * @param {number} level
+     * @returns {object} Objeto tipo Range
+     */
+    Header(str, level := 1)
+    {
+        rng := this.ITextDocument.Range(this.end, this.end)
+        rng.Text := str '`n'
+        rng.Size := -2 * level + 18
+        rng.Bold := this.tomTrue
+        rng.SpaceAfter := rng.SpaceBefore := -2 * level + 18
+        this.End := rng.End
+        return rng
+    }
+    /**
      * Insere um espaço vertical entre parágrafos
      * @param {number} num tamanho do espaço
      */
@@ -199,19 +215,10 @@ class RichEdit
      */
     Line(len, char := 1)
     {
-        switch char
-        {
-            case 1: char := '▔'
-            case 2: char := '━'
-            case 3: char := '▁'
-            case 4: char := '▀'
-            case 5: char := '■'
-            case 6: char := '▄'
-            case 7: char := '═'
-        }
+        Line := ['▔', '▀', '━', '■', '▁', '▄']
         rng := this.ITextDocument.Range(this.end, this.end)
         rep := Format('{:0' len '}', 0)
-        rng.Text := StrReplace(rep, 0, char) '`n'
+        rng.Text := StrReplace(rep, 0, Line[char]) '`n'
         this.End := rng.End
         return rng
     }
@@ -373,22 +380,53 @@ class RichEdit
         return rng
     }
     /**
-     * Converte a cor no padrão hsl para o valor RGB
-     * @param {number} hue valor da cor entre de 0 e 360
-     * @param {number} sat saturação entre 0 e 100
-     * @param {number} light luminosidade entre 0 e 100
-     * @returns {number} valor RGB da cor
+     * Insere uma tabela pré-formatada
+     * @param {array} table_array array de arrays com conteúdo da tabela
+     * @param {array} width array com valores de largura para cada coluna
+     * @param {array} align array com strings para o alinhamento de coluna
      */
-    hsl(hue, sat, light)
+    Table(table_array, width, align := [])
     {
-        sat /= 100, light /= 100, a := sat * Min(light, 1 - light)
-        f(n)
+        nCols := table_array[1].length, twips := 15, color := this.Gray[6]
+        SetAlign := Map(), SetAlign.CaseSense := false
+        SetAlign.Set('l', this.tomAlignLeft, 'c', this.tomAlignCenter, 'r', this.tomAlignRight)
+        align.Length := nCols, align.Default := 'l'
+
+        this.Ctrl.Move(, , 60)
+        rng := this.ITextDocument.Range(this.End, this.End)
+
+        for index, row_array in table_array
         {
-            k := Mod((n + hue / 30), 12)
-            color := light - a * Max(Min(k - 3, 9 - k, 1), -1)
-            return Round(255 * color)
+            rng.InsertTable(nCols, 1, 0)
+            rng.Move(tomTable := 15, -1)
+            row := rng.Row
+            row.Height := twips * 24
+            Loop nCols
+            {
+                row.CellIndex := A_Index - 1
+                row.SetCellBorderColors(color, color, color, color)
+                row.CellWidth := twips * width[A_Index]
+                row.CellAlignment := SetAlign['c']
+
+                if index = 1
+                    row.CellColorBack := this.Gray[8]
+                else if index & 1
+                    row.CellColorBack := this.Gray[10]
+                else
+                    row.CellColorBack := this.White
+            }
+            rng.Move(tomRow := 10, -1)
+            for value in row_array
+            {
+                rng.Text := value ?? ''
+                rng.Alignment := SetAlign[ align[A_Index] ]
+                (index = 1) && rng.Bold := this.tomTrue
+                rng.Move(tomCell := 12, 1)
+            }
+            ; Aplicação das modificações da estrutura da tabela
+            row.Apply(1, 0)
+            this.End += rng.End + 2
         }
-        return f(4) << 16 | f(8) << 8 | f(0)
     }
     /**
      * Insere um link no controle RichText
@@ -428,5 +466,23 @@ class RichEdit
 
             RichEdit.HasOwnProp(value) ? (RichEdit.%value%)() : Run(value)
         }
+    }
+    /**
+     * Converte a cor no padrão hsl para o valor RGB
+     * @param {number} hue valor da cor entre de 0 e 360
+     * @param {number} sat saturação entre 0 e 100
+     * @param {number} light luminosidade entre 0 e 100
+     * @returns {number} valor RGB da cor
+     */
+    hsl(hue, sat, light)
+    {
+        sat /= 100, light /= 100, a := sat * Min(light, 1 - light)
+        f(n)
+        {
+            k := Mod((n + hue / 30), 12)
+            color := light - a * Max(Min(k - 3, 9 - k, 1), -1)
+            return Round(255 * color)
+        }
+        return f(4) << 16 | f(8) << 8 | f(0)
     }
 }
