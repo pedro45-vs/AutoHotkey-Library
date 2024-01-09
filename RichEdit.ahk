@@ -1,7 +1,7 @@
 ﻿/************************************************************************
  * @description Controle RichEdit para criação e exibição de RichText
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/05
+ * @date 2024/01/08
  * @version 2.0.11
  ***********************************************************************/
 
@@ -358,8 +358,15 @@ class RichEdit
                 rng.Font := (obj.Font is Array) ? obj.Font[A_Index] : obj.Font
 
             if obj.HasProp('Alignment')
-                rng.Alignment := (obj.Alignment is Array) ? obj.Alignment[A_Index] : obj.Alignment
-
+            {
+                if obj.Alignment is Array
+                {
+                    obj.Alignment.default := this.tomAlignLeft
+                    rng.Alignment := obj.Alignment[A_Index]
+                }
+                else
+                    rng.Alignment := obj.Alignment
+            }
             rng.text := field ?? '', rng.Move(tomCell := 12, 1)
         }
         this.End += rng.End + 2

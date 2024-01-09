@@ -1,13 +1,14 @@
 ﻿/************************************************************************
  * @description GUI com o controle RichEdit para relatórios RichText
  * @author Pedro Henrique C. Xavier
- * @date 2023/12/22
- * @version 2.0.10
+ * @date 2024/01/08
+ * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
 #Include %A_LineFile% \..\RichEdit.ahk
 #Include %A_LineFile% \..\RichEditMenu.ahk
+#Include %A_LineFile% \..\RichTable.ahk
 
 class RichReport extends RichEdit
 {
