@@ -101,6 +101,7 @@ class RichEdit
         this.ITextDocument := ComValue(VT_DISPATCH, ITextDocument, F_OWNVALUE)
 
         this.Ctrl.OnNotify(EN_LINK := 0x70B, this.ClickLink.Bind(, this.ITextDocument))
+        SendMessage(WM_USER := 0x0400 | EM_EXLIMITTEXT := 53, 0, 0xFFFFFFFF, this.Ctrl)
     }
     /**
      * Define a cor do plano de fundo do controle RichEdit
@@ -190,9 +191,9 @@ class RichEdit
     {
         rng := this.ITextDocument.Range(this.end, this.end)
         rng.Text := str '`n'
-        rng.Size := -2 * level + 18
+        rng.Size := -2 * level + 22
         rng.Bold := this.tomTrue
-        rng.SpaceAfter := rng.SpaceBefore := -2 * level + 18
+        rng.SpaceAfter := rng.SpaceBefore := -2 * level + 22
         this.End := rng.End
         return rng
     }
@@ -397,7 +398,10 @@ class RichEdit
 
         for index, row_array in table_array
         {
-            rng.InsertTable(nCols, 1, 0)
+            try rng.InsertTable(nCols, 1, 0)
+            catch
+                break
+
             rng.Move(tomTable := 15, -1)
             row := rng.Row
             row.Height := twips * 24
