@@ -132,25 +132,6 @@ class RichEdit
         SendMessage(EM_SETREADONLY := 0x00CF, bool, , this.Ctrl)
     }
     /**
-     * Ajusta o tamanho do controle e invoca o comando Show da Gui hospedeira
-     * Opcionalmente definindo o modo edição ou somente leitura para o controle
-     * @param {string|integer} options se o parâmetro for um inteiro, será a razão do tamanho da tela.
-     * Se for uma string, será as mesmas opções para o método Gui.Show()
-     * @param {boolean} ReadOnly
-     */
-    Show(options := 'AutoSize', ReadOnly := true)
-    {
-        if IsInteger(options)
-        {
-            this.Ctrl.Move(, , A_ScreenWidth * options / 100, A_ScreenHeight * options / 100)
-            this.Ctrl.Gui.Show('AutoSize')
-        }
-        else
-            this.Ctrl.Gui.Show(options)
-
-        this.ReadOnly(ReadOnly)
-    }
-    /**
      * Limpa o controle RichEdit
      */
     Clear() => this.ITextDocument.New()
@@ -182,30 +163,14 @@ class RichEdit
         return rng
     }
     /**
-     * Insere um cabeçalho pré-formatado
-     * @param str Texto a ser exibido
-     * @param {number} level
-     * @returns {object} Objeto tipo Range
-     */
-    Header(str, level := 1)
-    {
-        rng := this.ITextDocument.Range(this.end, this.end)
-        rng.Text := str '`n'
-        rng.Size := -2 * level + 22
-        rng.Bold := this.tomTrue
-        rng.SpaceAfter := rng.SpaceBefore := -2 * level + 22
-        this.End := rng.End
-        return rng
-    }
-    /**
      * Insere um espaço vertical entre parágrafos
-     * @param {number} num tamanho do espaço
+     * @param {number} esp tamanho do espaço
      */
-    Space(num := 1)
+    Space(esp := 1)
     {
         rng := this.ITextDocument.Range(this.end, this.end)
         rng.Text := '`n'
-        rng.Para.SpaceAfter := num
+        rng.Para.SpaceAfter := esp
         this.End := rng.End
         return rng
     }
@@ -222,25 +187,6 @@ class RichEdit
         rng.Text := StrReplace(rep, 0, Line[char]) '`n'
         this.End := rng.End
         return rng
-    }
-    /**
-     * Insere o texto com padrão de cores intercalada
-     * @param {string} str texto separado por quebra de linha
-     * @param {number} color1 cor a ser usada
-     * @param {number} color2 cor a ser usada
-     * @returns {object} objeto tipo Range
-     */
-    ColorLines(str, color1 := this.LightGray, color2 := this.White)
-    {
-        end := this.end
-        loop parse str, '`n', '`r'
-        {
-            if A_Index & 1
-                this.text(A_LoopField '`n').BackColor := color2
-            else
-                this.text(A_LoopField '`n').BackColor := color1
-        }
-        return this.ItextDocument.Range(end, this.End)
     }
     /**
      * Adiciona as paradas de tabulação e o alinhamento
@@ -271,23 +217,6 @@ class RichEdit
                 this.Tabs.Push([tbPos, tbAlign])
                 rng.Para.AddTab(tbPos, tbAlign, tbLeader)
             }
-        }
-    }
-    /**
-     * Formata o resultado da pesquisa com as propriedades selecionadas
-     * @param {string} needleRegEx Regex da pesquisa
-     * @param {object} obj Objeto com as propriedades do ITextFont que serão alteradas
-     */
-    SetFormatInSearch(needleRegEx, obj)
-    {
-        haystack := this.ITextDocument.Range(0, this.End).text
-        while pos := RegExMatch(haystack, needleRegEx, &re, pos ?? 1)
-        {
-            style := this.ITextDocument.Range(pos - 1, pos + re.len - 1).Font
-            for prop, value in obj.OwnProps()
-                style.%prop% := value
-
-            this.ITextDocument.Range(pos - 1, (pos += re.len) - 1).Font := style
         }
     }
     /**
@@ -381,58 +310,6 @@ class RichEdit
         return rng
     }
     /**
-     * Insere uma tabela pré-formatada
-     * @param {array} table_array array de arrays com conteúdo da tabela
-     * @param {array} width array com valores de largura para cada coluna
-     * @param {array} align array com strings para o alinhamento de coluna
-     */
-    Table(table_array, width, align := [])
-    {
-        nCols := table_array[1].length, twips := 15, color := this.Gray[6]
-        SetAlign := Map(), SetAlign.CaseSense := false
-        SetAlign.Set('l', this.tomAlignLeft, 'c', this.tomAlignCenter, 'r', this.tomAlignRight)
-        align.Length := nCols, align.Default := 'l'
-
-        this.Ctrl.Move(, , 60)
-        rng := this.ITextDocument.Range(this.End, this.End)
-
-        for index, row_array in table_array
-        {
-            try rng.InsertTable(nCols, 1, 0)
-            catch
-                break
-
-            rng.Move(tomTable := 15, -1)
-            row := rng.Row
-            row.Height := twips * 24
-            Loop nCols
-            {
-                row.CellIndex := A_Index - 1
-                row.SetCellBorderColors(color, color, color, color)
-                row.CellWidth := twips * width[A_Index]
-                row.CellAlignment := SetAlign['c']
-
-                if index = 1
-                    row.CellColorBack := this.Gray[8]
-                else if index & 1
-                    row.CellColorBack := this.Gray[10]
-                else
-                    row.CellColorBack := this.White
-            }
-            rng.Move(tomRow := 10, -1)
-            for value in row_array
-            {
-                rng.Text := value ?? ''
-                rng.Alignment := SetAlign[ align[A_Index] ]
-                (index = 1) && rng.Bold := this.tomTrue
-                rng.Move(tomCell := 12, 1)
-            }
-            ; Aplicação das modificações da estrutura da tabela
-            row.Apply(1, 0)
-            this.End += rng.End + 2
-        }
-    }
-    /**
      * Insere um link no controle RichText
      * @param {string} text Texto a ser exibido.
      * @param {string|func} value Se for uma string, será usada como parâmetro da função Run().
@@ -471,6 +348,23 @@ class RichEdit
             RichEdit.HasOwnProp(value) ? (RichEdit.%value%)() : Run(value)
         }
     }
+    /**
+     * Formata o resultado da pesquisa com as propriedades selecionadas
+     * @param {string} needleRegEx Regex da pesquisa
+     * @param {object} obj Objeto com as propriedades do ITextFont que serão alteradas
+     */
+    SetFormatInSearch(needleRegEx, obj)
+    {
+        haystack := this.ITextDocument.Range(0, this.End).text
+        while pos := RegExMatch(haystack, needleRegEx, &re, pos ?? 1)
+        {
+            style := this.ITextDocument.Range(pos - 1, pos + re.len - 1).Font
+            for prop, value in obj.OwnProps()
+                style.%prop% := value
+
+            this.ITextDocument.Range(pos - 1, (pos += re.len) - 1).Font := style
+        }
+    }    
     /**
      * Converte a cor no padrão hsl para o valor RGB
      * @param {number} hue valor da cor entre de 0 e 360

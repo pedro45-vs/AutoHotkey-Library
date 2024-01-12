@@ -24,14 +24,23 @@ class ExtendedArray
         return false
     }
     /**
-     * Classifica os itens da array
+     * Retorna uma array classificada
      * @param {string} opt mesmas opções da função Sort()
      */
     Sort(opt := '')
     {
+        sorted := []
         for item in this
             str .= item '`n'
-        for n, item in StrSplit(Sort(SubStr(str, 1, -1), opt), '`n')
-            this[n] := IsNumber(item) ? Number(Item) : Item
+        return StrSplit(Sort(SubStr(str, 1, -1), opt), '`n')
+    }
+    /**
+     * Retorna uma string com o conteúdo da array separado por vírgulas
+     */
+    ToString()
+    {
+        for item in this
+            str .= item ', '
+        return SubStr(str, 1, -2)
     }
 }

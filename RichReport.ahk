@@ -1,7 +1,7 @@
 ﻿/************************************************************************
  * @description GUI com o controle RichEdit para relatórios RichText
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/08
+ * @date 2024/01/12
  * @version 2.0.11
  ***********************************************************************/
 
@@ -24,4 +24,109 @@ class RichReport extends RichEdit
         super.__New(this.GuiR, 'vRich VScroll HScroll ReadOnly')
         this.SetMargins(20, 20)
     }
+    /**
+     * Insere um cabeçalho pré-formatado
+     * @param str Texto a ser exibido
+     * @param {number} level
+     * @returns {object} Objeto tipo Range
+     */
+    Header(str, level := 1)
+    {
+        rng := this.ITextDocument.Range(this.end, this.end)
+        rng.Text := str '`n'
+        rng.Size := -2 * level + 22
+        rng.Bold := this.tomTrue
+        rng.SpaceAfter := rng.SpaceBefore := -2 * level + 22
+        this.End := rng.End
+        return rng
+    }
+    /**
+     * Insere uma lista numerada pré-formatada
+     * @param {string} str string separado por quebra de linha
+     */
+    List(arr)
+    {
+        if not IsObject(arr)
+            arr := StrSplit(RTrim(arr, '`n'), '`n')
+        
+        rng := this.ITextDocument.Range(this.end, this.end)
+        for item in arr
+            str_list .= A_Index '. ' item '`n'
+        
+        rng.text := str_list
+        rng.SetLineSpacing(tomLineSpaceAtLeast := 3, 18)
+        this.End := rng.End
+        return rng
+    }    
+    /**
+     * Insere uma tabela pré-formatada
+     * @param {array} table_array array de arrays com conteúdo da tabela
+     * @param {array} width array com valores de largura para cada coluna
+     * @param {array} align array com strings para o alinhamento de coluna
+     */
+    Table(table_array, width, align := [])
+    {
+        nCols := table_array[1].length, twips := 15, color := this.Gray[6]
+        SetAlign := Map(), SetAlign.CaseSense := false
+        SetAlign.Set('l', this.tomAlignLeft, 'c', this.tomAlignCenter, 'r', this.tomAlignRight)
+        align.Length := nCols, align.Default := 'l'
+
+        this.Ctrl.Move(, , 60)
+        rng := this.ITextDocument.Range(this.End, this.End)
+
+        for index, row_array in table_array
+        {
+            try rng.InsertTable(nCols, 1, 0)
+            catch
+                break
+
+            rng.Move(tomTable := 15, -1)
+            row := rng.Row
+            Loop nCols
+            {
+                row.CellIndex := A_Index - 1
+                row.SetCellBorderColors(color, color, color, color)
+                row.CellWidth := twips * width[A_Index]
+                row.CellAlignment := SetAlign['c']
+
+                if index = 1
+                    row.CellColorBack := this.Gray[8]
+                else if index & 1
+                    row.CellColorBack := this.Gray[10]
+                else
+                    row.CellColorBack := this.White
+            }
+            rng.Move(tomRow := 10, -1)
+            for value in row_array
+            {
+                rng.Text := value ?? ''
+                rng.Alignment := SetAlign[ align[A_Index] ]
+                rng.SpaceAfter := rng.SpaceBefore := 2
+                (index = 1) && rng.Bold := this.tomTrue
+                rng.Move(tomCell := 12, 1)
+            }
+            ; Aplicação das modificações da estrutura da tabela
+            row.Apply(1, 0)
+            this.End += rng.End + 2
+        }
+    }
+    /**
+     * Ajusta o tamanho do controle e invoca o comando Show da Gui hospedeira
+     * Opcionalmente definindo o modo edição ou somente leitura para o controle
+     * @param {string|integer} options se o parâmetro for um inteiro, será a razão do tamanho da tela.
+     * Se for uma string, será as mesmas opções para o método Gui.Show()
+     * @param {boolean} ReadOnly
+     */
+    Show(options := 'AutoSize', ReadOnly := true)
+    {
+        if IsInteger(options)
+        {
+            this.Ctrl.Move(, , A_ScreenWidth * options / 100, A_ScreenHeight * options / 100)
+            this.GuiR.Show('AutoSize')
+        }
+        else
+            this.GuiR.Show(options)
+
+        this.ReadOnly(ReadOnly)
+    }     
 }

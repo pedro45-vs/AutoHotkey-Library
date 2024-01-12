@@ -22,7 +22,7 @@ Alert(string_alert, options := '')
     switch (RegExMatch(options, '[a-zA-Z]{2,}', &theme) ? theme[0] : 'info'), 'Locale'
     {
         case 'ok'      : cback := 'D1E7DD', ctext := 'c23961D', strTitu := '✔ OK'
-        case 'info'    : cback := '9ECFE9', ctext := 'c043A62', strTitu := 'ℹ️ INFO'
+        case 'info'    : cback := 'BADDEF', ctext := 'c043A62', strTitu := 'ℹ️ INFO'
         case 'alerta'  : cback := 'FFF3CD', ctext := 'cCAA202', strTitu := '⚠ ALERTA'
         case 'erro'    : cback := 'FEE2E2', ctext := 'cCC0000', strTitu := '☠ ERRO'
         case 'lembrete': cback := 'FFFFFF', ctext := 'c495057', strTitu := '⏰ LEMBRETE'

@@ -25,6 +25,8 @@
 ;
 #Requires AutoHotkey v2.0
 
+JSON.EscapeUnicode := false
+
 class JSON
 {
 	static version := "2.0.0"

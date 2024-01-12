@@ -26,6 +26,23 @@ class Zip
         RunWait Format('{} a "{}" "{}" {}', this.exe, zipFile, filePath, mode)
     }
     /**
+     * Adiciona uma pasta para um arquivo compactado
+     * @param {string} zipFile Arquivo compactado
+     * @param {string} filePath Diretório que será compactado
+     * @param {boolean} delete Deletar após compactação?
+     */
+    static AddFolder(zipFile, filePath, delete := false)
+    {
+        SplitPath(filepath, &OutFileName, &OutDir)
+        path :=  OutDir '\.\' OutFileName '\*'
+        RunWait Format('{} a "{}" "{}"', this.exe, zipFile, path)
+        if delete
+        {
+            FileDelete(filePath '\*.*')
+            DirDelete(filePath)
+        }
+    }
+    /**
      * Extrai um arquivo zip para um diretório específico
      * @param {string} zipFile Arquivo compactado
      * @param {string} filePath Diretório para extração

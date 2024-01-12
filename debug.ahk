@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #Include %A_LineFile% \..\cJson.ahk
 #Include %A_LineFile% \..\RichEdit.ahk
 #Include %A_LineFile% \..\RichEditMenu.ahk
