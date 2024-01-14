@@ -3,8 +3,8 @@
  * Documentação da API:
  * https://www.voidtools.com/support/everything/sdk/
  * @author Pedro Henrique C Xavier
- * @date 2023/12/08
- * @version 2.0.10
+ * @date 2024/01/14
+ * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -114,12 +114,13 @@ class Everything
      * Retorna o nome do arquivo, o caminho completo, o tamanho e a data de modificação
      * @returns {string} string no formato CSV
      */
-    getcsv(flags := 0x53)
+    getTable(flags := 0x53)
     {
         ; https://www.voidtools.com/support/everything/sdk/everything_setrequestflags/
         ; 0x53 = File + FullFilePath + size + date mod
         DllCall('Everything64\Everything_SetRequestFlags', 'int', 0x53)
         this.__ExecuteQuery()
+        table := [ ['ARQUIVO', 'CAMINHO', 'TAMANHO (BYTES)', 'DATA MODIFICAO'] ]
         Loop this.NumRes
         {
             size := Buffer(8)
@@ -130,9 +131,9 @@ class Everything
             if !DllCall('Everything64\Everything_GetResultDateModified', 'int', A_Index - 1, 'UPtr', filetime.ptr)
                 MsgBox this.__LastError()
 
-            csv .= this.getFile(A_Index) ';' this.getFullPath(A_Index) ';' NumGet(size, 'Int64') ';' ConvTime(NumGet(filetime, 'Int64')) '`n'
+            table.Push( [this.getFile(A_Index), this.getFullPath(A_Index), NumGet(size, 'Int64'), ConvTime(NumGet(filetime, 'Int64')) ] )
         }
-        return csv
+        return table
         /**
          * Converte de nanossegundos para segundos, e desconta o fuso horário brasileiro
          * Uma struture filetime retorna o tempo em 100 nanossegundos
