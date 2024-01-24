@@ -358,13 +358,13 @@ class RichEdit
         haystack := this.ITextDocument.Range(0, this.End).text
         while pos := RegExMatch(haystack, needleRegEx, &re, pos ?? 1)
         {
-            style := this.ITextDocument.Range(pos - 1, pos + re.len - 1).Font
+            style := this.ITextDocument.Range(--pos, pos + re.len).Font
             for prop, value in obj.OwnProps()
                 style.%prop% := value
 
-            this.ITextDocument.Range(pos - 1, (pos += re.len) - 1).Font := style
+            this.ITextDocument.Range(pos , (pos += re.len)).Font := style
         }
-    }    
+    }
     /**
      * Converte a cor no padrão hsl para o valor RGB
      * @param {number} hue valor da cor entre de 0 e 360

@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description Biblioteca para trabalhar com números em padrões diferentes
  * @author Pedro Henrique C. Xavier
- * @date 2023/12/04
- * @version 2.0.10
+ * @date 2024/01/22
+ * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotKey v2.0
@@ -46,4 +46,17 @@ ConverterNumBancario(num)
 {
     if RegExMatch(num, '(-?\d+(?:\.\d{3})*\,\d\d)\s?([CD]?)', &re)
         return (re[2] = 'D') ? -ToNum(re[1]) : ToNum(re[1])
+}
+
+/**
+ * Converte um número nativo em formato moeda com R$
+ * Ex.: 12.35 -> R$ 12,35
+ * @param {number}
+ * @returns {string}
+ */
+moeda(num)
+{
+    VarSetStrCapacity(&out, 260)
+    if DllCall('GetCurrencyFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
+        return out
 }

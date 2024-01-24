@@ -1,17 +1,18 @@
 ﻿/************************************************************************
  * @description GUI com o controle RichEdit para relatórios RichText
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/12
+ * @date 2024/01/24
  * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
 #Include %A_LineFile% \..\RichEdit.ahk
 #Include %A_LineFile% \..\RichEditMenu.ahk
+#Include %A_LineFile% \..\cJSON.ahk
 
 class RichReport extends RichEdit
 {
-    __New()
+    __New(value?)
     {
         prevIconFile := A_IconFile, prevIconNumber := A_IconNumber
         TraySetIcon(A_LineFile '\..\..\icons\report.ico')
@@ -23,6 +24,13 @@ class RichReport extends RichEdit
         this.GuiR.MarginX := this.GuiR.MarginY := 0
         super.__New(this.GuiR, 'vRich VScroll HScroll ReadOnly')
         this.SetMargins(20, 20)
+
+        A_TrayMenu.Add()
+        A_TrayMenu.Add('Show GUI', this.GuiShow.Bind(this))
+        A_TrayMenu.Default := 'Show GUI'
+        A_TrayMenu.ClickCount := 1
+        
+        IsSet(value) && this.DebugMode(value)
     }
     /**
      * Insere um cabeçalho pré-formatado
@@ -42,22 +50,21 @@ class RichReport extends RichEdit
     }
     /**
      * Insere uma lista numerada pré-formatada
-     * @param {string} str string separado por quebra de linha
+     * @param {array} arr_list array com strings
      */
-    List(arr)
+    List(arr_list)
     {
-        if not IsObject(arr)
-            arr := StrSplit(RTrim(arr, '`n'), '`n')
-        
+        for item in IsObject(arr_list) ? arr_list : StrSplit(RTrim(arr_list, '`n'), '`n')
+            str_list .= Format('`t{}.  {}`n', A_Index, item)
+
         rng := this.ITextDocument.Range(this.end, this.end)
-        for item in arr
-            str_list .= A_Index '. ' item '`n'
-        
+        rng.Para.ClearAllTabs()
+        rng.Para.AddTab(20, this.tomAlignLeft, this.tomSpaces)
         rng.text := str_list
         rng.SetLineSpacing(tomLineSpaceAtLeast := 3, 18)
         this.End := rng.End
         return rng
-    }    
+    }
     /**
      * Insere uma tabela pré-formatada
      * @param {array} table_array array de arrays com conteúdo da tabela
@@ -117,7 +124,7 @@ class RichReport extends RichEdit
      * Se for uma string, será as mesmas opções para o método Gui.Show()
      * @param {boolean} ReadOnly
      */
-    Show(options := 'AutoSize', ReadOnly := true)
+    Show(options := 60, ReadOnly := true)
     {
         if IsInteger(options)
         {
@@ -128,5 +135,29 @@ class RichReport extends RichEdit
             this.GuiR.Show(options)
 
         this.ReadOnly(ReadOnly)
-    }     
+    }
+    /**
+     * Minimiza ou Maximiza a janela do relatório clicando no ícone de bandeija.
+     */
+    GuiShow(*)
+    {
+        win := 'AHK_id' this.GuiR.Hwnd
+        WinGetMinMax(win) ? WinRestore(win) : WinMinimize(win)
+    }
+    /**
+     * Mostra o valor com fonte monoespaçada e em fundo cinza.
+     * Se o valor for um objeto, usará a função JSON.Dump()
+     * @param {value} Number, String, Map or Array
+     */
+    DebugMode(value)
+    {
+        IsObject(value) && value := JSON.Dump(value)
+        this.SetBkgnColor(this.color['#F0F0F0'])
+        this.Text(value).Name := 'Consolas'
+        this.ShowMenu()
+        this.Show()
+    }
 }
+
+
+

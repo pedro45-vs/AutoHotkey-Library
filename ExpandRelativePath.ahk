@@ -2,7 +2,7 @@
 
 ExpandRelativePath(relative_path)
 {
-    buf := Buffer(260, 0)
-    DllCall('shlwapi\PathCombine', 'ptr', buf, 'wStr', A_WorkingDir, 'wStr', relative_path)
-    return StrGet(buf)
+    VarSetStrCapacity(&out, 260)
+    if DllCall('shlwapi\PathCanonicalize', 'str', out, 'str', relative_path)
+        return out
 }

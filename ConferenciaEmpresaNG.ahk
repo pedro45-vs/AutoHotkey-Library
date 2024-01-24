@@ -2,8 +2,8 @@
  * @description Retorna um MAP com as informações relevantes do arquivo
  * para ser usado por outros scripts
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/21
- * @version 2.0.2
+ * @date 2024/01/24
+ * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -35,7 +35,12 @@ ConferenciaEmpresaNG()
             cnpj := RegExReplace(col[3], '\D'), insc := RegExReplace(col[20], '[\.\-]')
             dados[cnpj] := { nome: trim(col[5]), insc: insc, regime: col[46] }
             if not dados[cnpj].regime
-                MsgBox('A empresa ' dados[cnpj].nome ' não tem regime definido`nO script será encerrado.', 'ConferenciaEmpresaNG()', 'O IconX'), ExitApp()
+            {
+                if MsgBox('A empresa ' dados[cnpj].nome ' não tem regime definido`nDeseja continuar?.', 'ConferenciaEmpresaNG()', 'OC Icon!') = 'OK'
+                    continue
+                else
+                    Exit()                
+            }
         }
     }
     ; Insere os dados da Associação para poder sair impresso na lista mesmo não estando cadastrado no NG

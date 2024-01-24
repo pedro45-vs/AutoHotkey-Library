@@ -15,7 +15,7 @@
  * @param {string} CP Encoding de retorno, normalmente CP0 ou CP850
  * @returns {string} Texto do standart output
  */
-stdout(sCmd, Callback := '', CP := '850')
+StdOut(sCmd, Callback := '', CP := '850')
 {
     DllCall('CreatePipe', 'UIntP', &hPipeRead := 0, 'UIntP', &hPipeWrite := 0, 'UInt', 0, 'UInt', 0)
     DllCall('SetHandleInformation', 'UInt', hPipeWrite, 'UInt', 1, 'UInt', 1)

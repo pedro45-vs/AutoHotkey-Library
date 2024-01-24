@@ -1,9 +1,8 @@
 ﻿/************************************************************************
  * @description Biblioteca com funções auxiliares ao script Pedro.ahk
- * @file Lib_Pedro.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/09/26
- * @version 2.0.10
+ * @date 2024/01/23
+ * @version 2.0.11
  ***********************************************************************/
 
 AbrirClipBoard(*) => Notepad2('/c')
@@ -48,9 +47,10 @@ FoldScripts(*) => Run('\\srvrg-saas\rede\PEDRO\Scripts')
 FoldSintegrasClientes(*) => Run('\\srvrg-saas\rede\SINTEGRA - CLIENTES')
 FoldXML(*) => ('\\srvrg-saas\rede\PEDRO\XML')
 HelpAHK(*) => Run('C:\Program Files\AutoHotkey\v2\AutoHotkey.chm')
-ImpArquivosPDF(*) => Run(A_AhkPath '`s' A_WorkingDir '\ImprimirArquivosPDF.ahk ' '"' LastHwnd() '"')
+ImpArquivosPDF(*) => Run(Format('{} {}\ImprimirArquivosPDF.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
 IncoSped(*) => Run('Conferir_SPED_Fiscal\Inconsistências Sped Fiscal.ahk')
-InlineCalc(*) =>  WinExist('Calculadora Inline ahk_class AutoHotkeyGUI') ?  WinClose() :  Run('Calculadora Inline.ahk')
+
+;InlineCalc(*) =>  WinExist('Calculadora Inline ahk_class AutoHotkeyGUI') ?  WinClose() :  Run('Calculadora Inline.ahk')
 InsAspasDuplas(*) => ClipTools(2)
 InsAspasSimples(*) => ClipTools(1)
 InsClipBoard(*) => (CoordMode('Mouse'), MouseGetPos(&X, &Y), InputGui('X' X ' Y' Y))
@@ -59,7 +59,7 @@ InsMinusculas(*) => ClipTools(5)
 InsParenteses(*) => ClipTools(3)
 InsTitulo(*) => ClipTools(6)
 LastHwnd(*) => GetExplorerPath(WinExist('A'))
-ListarArqPasta(*) => Run(A_AhkPath '`s' A_WorkingDir '\ListarArquivosdePasta.ahk ' '"' LastHwnd() '"')
+ListarArqPasta(*) => Run(Format('{} {}\ListarArquivosdePasta.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
 LoginARAdm(*) => SendEvent('Administrador{Tab}Tech123/qwe@{Tab 6}{Enter}')
 LoginARMateus(*) => SendEvent('mateus.duarte{Tab}@mat123{Tab 6}{Enter}')
 LoginARPed(*) => SendEvent('@ped123{Tab 3}{Enter}')
@@ -71,7 +71,6 @@ Notepad2(flag) => Run(A_AppData '\Notepad2\Notepad2.exe ' flag)
 OpenScript(*) => ListVars()
 OpenSiare(*) => Run('"C:\Program Files\Google\Chrome\Application\chrome.exe" https://www2.fazenda.mg.gov.br/sol/')
 OpenSintegra(*) => Run('https://dfe-portal.svrs.rs.gov.br/NFE/CCC')
-OpenWhatsapp(*) => Run('C:\Users\Pedro RG\Desktop\Whatsapp.lnk')
 PauseScript(*) => Pause(-1)
 ProtFiscal(*) => Run('Protocolos\Protocolo Fiscal.ahk')
 QuitApp(*) => Send('!{F4}')
@@ -79,8 +78,8 @@ ReloadScript(*) => Reload()
 RemAspasParent(*) => ClipTools(8)
 RemoverPontuacao(*) => SendEvent(RegExReplace(A_Clipboard, '(*UCP)([^\w,]|R\$)'))
 RemoverQuebrasLinha(*) => SendEvent(RegExReplace(A_Clipboard, '[\n\r\t]|^\s*|\s+$|\s{2,}'))
-RenChave(*) => Run(A_AhkPath '`s' A_WorkingDir '\RenomearChaveAcesso.ahk ' '"' LastHwnd() '"')
-RenGuia(*) => Run(A_AhkPath '`s' A_WorkingDir '\RenomearGuias.ahk ' '"' LastHwnd() '"')
+RenChave(*) => Run(Format('{} {}\RenomearChaveAcesso.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
+RenPDF(*) => Run(Format('{} {}\Lib\RenomearPDF.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
 RunAgenda(*) => RunAct('ContatosGoogle.ahk', 'Agenda de Telefones', 1)
 RunEdge(*) => Run('C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe')
 RunGmail(*) => Run('https://mail.google.com/mail/u/0/#inbox')
@@ -103,6 +102,15 @@ VisuSped(*) => Run('Conferir_SPED_Fiscal\Visualizador Sped Fiscal.ahk')
 WinCalc(*) => RunAct('calc.exe')
 WinSpy(*) => Run('C:\Program Files\AutoHotkey\WindowSpy.ahk')
 
+InlineCalc(*)
+{
+    if WinExist('Calculadora Inline ahk_class AutoHotkeyGUI')
+         if WinGetMinMax()
+            WinRestore(), ControlFocus('Edit1')
+        else WinMinimize()
+    else
+        Run('Calculadora Inline.ahk')
+}
 
 CriarPastaMesPassado(*)
 {
@@ -124,13 +132,12 @@ VisuXMLNFe(*)
         return
     }
     folder := (A_ThisHotkey = '~Alt & v') ? LastHwnd() : '\\srvrg-saas\rede\PEDRO\XML'
-    Run(A_AhkPath '`s' A_WorkingDir '"\Conferir_arquivo_XML\Visualizador XML NFe.ahk" ' '"' folder '"')
+    Run(Format('{} "{}\Conferir_arquivo_XML\Visualizador XML NFe.ahk" "{}"', A_AhkPath, A_WorkingDir, folder))
 }
 
 ProtocoloAut(*)
 {
-    Run(A_AhkPath '`s' '"' A_WorkingDir '\Protocolos\Protocolo Automatico.ahk' '"'
-        . '`s' '"' '\\srvrg-saas\rede\PEDRO\Impostos ' mesPassado('MMMM yyyy') '"')
+    Run(Format('{} "{}\Protocolos\Protocolo Automatico.ahk" "\\srvrg-saas\rede\PEDRO\Impostos {}"', A_AhkPath, A_WorkingDir, mesPassado('MMMM yyyy')))
 }
 
 DeletarArquivos(*)
