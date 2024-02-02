@@ -1,14 +1,13 @@
 ﻿/************************************************************************
  * @description class para trabalhar com arquivos csv
- * @file csv_class.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/09/27
- * @version 2.0.10
+ * @date 2024/01/25
+ * @version 2.0.11
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
 
-class csv
+class ClassCSV
 {
     __New(delimiter := ';', Encoding := 'UTF-8')
     {

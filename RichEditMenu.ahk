@@ -2,8 +2,8 @@
  * @description Cria Menu de Contexto para o RichEdit com diversas funções
  * Para criar o menu, inclua essa lib e chame o método Instancia.CriarMenu()
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/03
- * @version 2.0.10
+ * @date 2024/01/24
+ * @version 2.0.11
  ***********************************************************************/
 
 RichEdit.Prototype.Base := RichEditMenu()
@@ -33,6 +33,7 @@ class RichEditMenu
         HotIfWinActive('ahk_id' this.Ctrl.Gui.hwnd)
         Hotkey('^s', (*) => this.SaveDialog())
         Hotkey('^f', (*) => this.ShowGuiSearch())
+        Hotkey('^w', (*) => this.OpenWithWordPad())
     }
     /**
      * @params {callback}
@@ -47,7 +48,7 @@ class RichEditMenu
         CM.Add()
         CM.Add('Localizar `tCtrl+F', this.ShowGuiSearch.Bind(this))
         CM.Add('Salvar `tCtrl+S', this.SaveDialog.Bind(this))
-        CM.Add('Abrir com Wordpad', this.OpenWithWordPad.Bind(this))
+        CM.Add('Abrir com Wordpad `tCtrl+W', this.OpenWithWordPad.Bind(this))
         CM.Show()
     }
     /**
@@ -56,7 +57,8 @@ class RichEditMenu
      */
     SaveDialog(*)
     {
-        if not select_file := FileSelect('S16', A_MyDocuments '\RichText.rtf', 'Salvar arquivo', 'Rich Text Format(*.rtf)')
+        filepath := A_MyDocuments '\' SubStr(A_ScriptName, 1, -3) 'rtf'
+        if not select_file := FileSelect('S16', filepath, 'Salvar arquivo', 'Rich Text Format(*.rtf)')
             Exit()
 
         if not select_file ~= '[Rr][Tt][Ff]$'

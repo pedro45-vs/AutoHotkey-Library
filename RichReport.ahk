@@ -29,7 +29,7 @@ class RichReport extends RichEdit
         A_TrayMenu.Add('Show GUI', this.GuiShow.Bind(this))
         A_TrayMenu.Default := 'Show GUI'
         A_TrayMenu.ClickCount := 1
-        
+
         IsSet(value) && this.DebugMode(value)
     }
     /**
@@ -135,6 +135,7 @@ class RichReport extends RichEdit
             this.GuiR.Show(options)
 
         this.ReadOnly(ReadOnly)
+        this.ShowMenu()
     }
     /**
      * Minimiza ou Maximiza a janela do relatório clicando no ícone de bandeija.
@@ -154,10 +155,6 @@ class RichReport extends RichEdit
         IsObject(value) && value := JSON.Dump(value)
         this.SetBkgnColor(this.color['#F0F0F0'])
         this.Text(value).Name := 'Consolas'
-        this.ShowMenu()
-        this.Show()
+        this.Show(, false)
     }
 }
-
-
-

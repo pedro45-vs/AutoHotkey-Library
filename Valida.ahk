@@ -1,7 +1,6 @@
 /************************************************************************
  * @description Biblioteca com funções diversas para validação de CPF,
  * CNPJ, Inscrição estadual e chave de acesso NFe
- * @file Valida.ahk
  * @author Pedro Henrique C. Xavier
  * @date 2023/08/22
  * @version 2.0.5

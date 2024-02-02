@@ -14,7 +14,7 @@ NomeNorm := Map()
 Loop read 'obs_lista_ng.txt'
 {
     col := StrSplit(A_LoopReadLine, '|')
-    NomeNorm[col[1]] := Trim(col[3])
+    NomeNorm[col[2]] := Trim(col[1])
 }
 
 NomeMes := Map(), NomeMes.CaseSense := false
@@ -199,10 +199,10 @@ ExtrairNomeDAE()
         ref := ref[1] '-' ref[2]
         if RegExMatch(texto, '\d{9}\.\d{2}\-?\d{2}', &insc, Instr(texto, 'IDENTIFICAÇÃO', 'Locale'))
             cnpj := BuscarCNPJ(insc[0])
-        
+
         else if RegExMatch(texto, '\d{2}\.\d{6}\.\d{4}\/\d{2}', &insc, Instr(texto, 'IDENTIFICAÇÃO', 'Locale'))
-            cnpj := RegExReplace(cnpj[0], '\D') 
-         
+            cnpj := RegExReplace(cnpj[0], '\D')
+
         return NomeNorm.Get(cnpj, cnpj) A_Space 'Parcelamento ICMS' A_Space ref
     }
 

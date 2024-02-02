@@ -60,6 +60,7 @@ InsParenteses(*) => ClipTools(3)
 InsTitulo(*) => ClipTools(6)
 LastHwnd(*) => GetExplorerPath(WinExist('A'))
 ListarArqPasta(*) => Run(Format('{} {}\ListarArquivosdePasta.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
+ListarXML(*) => Run('Listar XML Saida para Importar.ahk')
 LoginARAdm(*) => SendEvent('Administrador{Tab}Tech123/qwe@{Tab 6}{Enter}')
 LoginARMateus(*) => SendEvent('mateus.duarte{Tab}@mat123{Tab 6}{Enter}')
 LoginARPed(*) => SendEvent('@ped123{Tab 3}{Enter}')
@@ -169,7 +170,7 @@ CalcularClipBoard(*)
 AreaRemota(*)
 {
     WinSetStyle(-0xC00000, 'ahk_exe mstsc.exe')
-    WinMove(40, 1, 1295, 735, 'ahk_exe mstsc.exe')
+    WinMove(5, 5, 1295, 735, 'ahk_exe mstsc.exe')
 }
 
 ; Fecha todas as guias abertas do explorer de uma vez
@@ -256,4 +257,31 @@ AlternarAreaTrabalhoRemota(*)
     }
     else
         WinActivate(Win)
+}
+
+RenSped()
+{
+    if not select_file := FileSelect(3, '\\srvrg-saas\rede\PEDRO\Meus Arquivos Magnéticos', 'Selecione o arquivo Sped Fiscal', 'Arquivos de texto (*.txt)')
+        ExitApp()
+
+    col := StrSplit(FileOpen(select_file, 'r').ReadLine(), '|')
+    data := RegExReplace(col[5], '(\d{2})(\d{2})(\d{4})', '$3$2')
+    SplitPath(select_file, , &OutDir)
+    ren_file := Format('{}\SpedEFD-{}-{}-Remessa de arquivo {}-{}.txt', OutDir, col[8], col[11], col[4] ? 'substituto' : 'orignal', FormatTime(data, 'MMMyyyy'))
+    FileMove(select_file, ren_file)
+}
+
+MagicFormat(str)
+{
+    len := StrLen(str)
+    if len = 11
+        form := Format('{:013}', str)
+
+    if len = 14
+        form := RegExReplace(str, '(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})', '$1.$2.$3/$4-$5')
+
+    if len = 18
+        form := RegExReplace(str, '\D')
+
+    return form
 }

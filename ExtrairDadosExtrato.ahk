@@ -19,29 +19,29 @@
  */
 ExtrairDadosExtrato(fileName)
 {
-    texto := pdf2var(fileName, '-table')
+    texto := pdf2var(fileName, '-raw')
     if not InStr(texto, 'Extrato do Simples Nacional')
         return false
 
-    RegExMatch(texto, '(\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2})', &re)
-    RegExMatch(texto, 'Período de Apuração \(PA\): (\d{2}\/\d{4})', &re)
-
-    fat := []
+    RegExMatch(texto, '\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}', &cnpj)
+    RegExMatch(texto, 'Período de Apuração \(PA\): (\d{2}\/\d{4})', &comp)
+    
     /**
      * Marca a parada do Regex
      * só irá pegar o faturamento do mercado interno por enquanto
      */
+    faturamentos := [] 
     mercado_externo := InStr(texto, '2.2.2) Mercado Externo')
-    while pos := RegExMatch(texto, '(\d{2}\/\d{4})\s+(((\.)?\d{1,3})+\,\d{2})', &re, pos ?? 1)
+    while pos := RegExMatch(texto, '(\d{2}\/\d{4})\s(((\.)?\d{1,3})+\,\d{2})', &fat, pos ?? 1)
     {
         if pos > mercado_externo
             break
-        fat.push(re[1] '`t' re[2])
-        pos += re.len
+        faturamentos.push( [ fat[1], fat[2] ] )
+        pos += fat.len
     }
     return {
-        cnpj: RegExReplace(re[0], '\D'),
-        apuracao: StrReplace(re[1], '/', '-'),
-        faturamentos: fat
+        cnpj: RegExReplace(cnpj[0], '\D'),
+        apuracao: comp[1],
+        faturamentos: faturamentos
     }
 }
