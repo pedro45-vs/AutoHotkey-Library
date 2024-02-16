@@ -262,7 +262,7 @@ AlternarAreaTrabalhoRemota(*)
 RenSped()
 {
     if not select_file := FileSelect(3, '\\srvrg-saas\rede\PEDRO\Meus Arquivos Magnéticos', 'Selecione o arquivo Sped Fiscal', 'Arquivos de texto (*.txt)')
-        ExitApp()
+        return
 
     col := StrSplit(FileOpen(select_file, 'r').ReadLine(), '|')
     data := RegExReplace(col[5], '(\d{2})(\d{2})(\d{4})', '$3$2')

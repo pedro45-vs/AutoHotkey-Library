@@ -6,10 +6,7 @@
 
 Debug(var)
 {
-    prevIconFile := A_IconFile, prevIconNumber := A_IconNumber
-    TraySetIcon(A_LineFile '\..\..\icons\debug.ico')
     GuiD := Gui('Resize', 'Debug: ' A_ScriptName)
-    (prevIconFile) && TraySetIcon(prevIconFile, prevIconNumber)
     GuiD.OnEvent('Close', (*)=> ExitApp())
     GuiD.OnEvent('Size', (o, m, w, h) => Rich.Ctrl.Move(,, w-20, h-60))
     GuiD.SetFont('s11', 'Calibri')

@@ -15,8 +15,8 @@
  */
 milhar(num := 0, dec := 2)
 {
-    num := !IsNumber(num) ? ToNum(num) : num
-    return RegExReplace(StrReplace(Round(num, dec), '.', ','), '\d(?=(\d{3})+(\D|$))', '$0.')
+    IsNumber(num) || num := ToNum(num)
+    return RegExReplace(StrReplace(Round(num, dec), '.', ','), '\G\d+?(?=(\d{3})+(?:\D|$))', '$0.')
 }
 
 /**
@@ -59,4 +59,12 @@ moeda(num)
     VarSetStrCapacity(&out, 260)
     if DllCall('GetCurrencyFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
         return out
+}
+
+
+NumBr(num)
+{
+    VarSetStrCapacity(&out, 260)
+    if DllCall('GetNumberFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
+        return out    
 }

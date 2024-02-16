@@ -76,3 +76,18 @@ RunAct(program, WinTitle:='', Move:=false)
 		WinMove(movX,movY,,, WinMatch)
     }
 }
+/**
+ * Resolve os caminhos relativos em absolutos
+ * @param {string} relative_path
+ */
+PathCanonicalize(relative_path)
+{
+    VarSetStrCapacity(&out, 260)
+    if DllCall('shlwapi\PathCanonicalize', 'str', out, 'str', relative_path)
+        return out
+}
+/**
+ * Chega se uma pasta está vazia ou não
+ * @param {string} path
+ */
+PathIsDirectoryEmpty(path) => DllCall('shlwapi\PathIsDirectoryEmpty', 'str', path)

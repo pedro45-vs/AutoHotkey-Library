@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description Renomeia arquivos PDF diversos para melhor organização
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/15
- * @version 2.0.11
+ * @date 2024-02-16
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -43,6 +43,7 @@ if A_LineFile = A_ScriptFullPath
 
     for filename in select_files
     {
+        ToolTip filename
         if namepdf := ExtrairNomePDF(filename)
             RenomearArquivoPDF(filename, namepdf)
         else
@@ -67,7 +68,7 @@ ExtrairNomePDF(filepath)
 
     if InStr(texto, 'Documento de Arrecadação de Receitas Federais')
         return ExtrairNomeDARF()
-
+        
     else if InStr(texto, 'Documento de Arrecadação do Simples Nacional')
         return ExtrairNomeDAS()
 
@@ -175,12 +176,15 @@ ExtrairNomeDARF()
 ExtrairNomeDAS()
 {
     cnpj := RegExCNPJ()
-    RegExMatch(texto, '([A-Za-z]{3}).*\/(\d{4})', &data)
-    data := NomeMes[data[1]] '-' data[2], nome := 'DAS'
-    if Instr(texto, 'DAS de PARCSN')
+    if Instr(texto, 'DAS de PARC')
     {
         data := RegExData(Instr(texto, 'Data de Vencimento'))
-        nome := 'Parcelamento DAS'
+        nome := 'DAS Parcelamento'
+    }
+    else
+    {
+        RegExMatch(texto, '([A-Za-z]{3}).*\/(\d{4})', &data)
+        data := NomeMes[data[1]] '-' data[2], nome := 'DAS'
     }
     return NomeNorm.Get(cnpj, cnpj) A_Space nome A_Space data
 }
@@ -188,7 +192,8 @@ ExtrairNomeDAS()
 ExtrairNomeISS()
 {
     cnpj := RegExCNPJ(InStr(texto, 'Dados do Contribuinte'))
-    data := RegExData(InStr(texto, 'MÊS/ANO REFERÊNCIA'))
+    RegExMatch(texto, '(\d\d)\/(\d\d\d\d)', &redata, InStr(texto, 'MÊS/ANO REFERÊNCIA'))
+    data := StrReplace(redata[0], '/', '-')
     return NomeNorm.Get(cnpj, cnpj) A_Space 'ISSQN' A_Space data
 }
 
