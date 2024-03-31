@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description Biblioteca para trabalhar com números em padrões diferentes
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/22
- * @version 2.0.11
+ * @date 2024-03-31
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 #Requires AutoHotKey v2.0
@@ -24,7 +24,7 @@ milhar(num := 0, dec := 2)
  * @param {string} str Número no padrão brasileiro. Ex. 1.234,56
  * @returns {number} Número nativo
  */
-ToNum(str := 0) => +StrReplace(StrReplace(str || 0, '.'), ',', '.')
+ToNum(str := 0) => IsNumber(str) ? str : +StrReplace(StrReplace(str || 0, '.'), ',', '.')
 
 /**
  * Retorna verdadeiro se o valor estiver entre o valor mínimo e o máximo
@@ -62,9 +62,49 @@ moeda(num)
 }
 
 
-NumBr(num)
+NumBRDLL(num)
 {
     VarSetStrCapacity(&out, 260)
     if DllCall('GetNumberFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
         return out    
+}
+
+NumBr(num)
+{
+    IsNumber(num) || num := ToNum(num)
+    return StrReplace(num, '.', ',')
+}
+
+Somar(values*)
+{
+    sum := 0
+    for value in values
+        sum += toNum(value)
+   return milhar(sum)
+}
+
+Contar(values*) => Values.Length
+
+Maximo(values*)
+{
+    arr := []
+    for value in values
+        arr.Push(ToNum(value))
+    return milhar(Max(arr*))
+}
+
+Minimo(values*)
+{
+    arr := []
+    for value in values
+        arr.Push(ToNum(value))
+    return milhar(Min(arr*))
+}
+
+Media(values*)
+{
+    sum := 0
+    for value in values
+        sum += toNum(value)
+    return milhar(sum / values.Length)
 }
