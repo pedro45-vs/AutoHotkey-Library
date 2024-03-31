@@ -164,7 +164,7 @@ class ClassTable
                 return DateDiff(a1, a2, 'days') * (order = 'desc' ? -1 : 1)
             }
         }
-        DetectType(value) => (value ~= '[0-9\,\.]') ? 'number' : (value ~= '\d\d\/\d\d\/\d{4}') ? 'date' : 'string'
+        DetectType(value) => (value ~= '[0-9,.]') ? 'number' : (value ~= '\d\d\/\d\d\/\d{4}') ? 'date' : 'string'
     }
     /**
      * Transforma o conteúdo de uma coluna de acordo com a função passada
