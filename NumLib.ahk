@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description Biblioteca para trabalhar com números em padrões diferentes
  * @author Pedro Henrique C. Xavier
- * @date 2024-03-31
- * @version 2.1-alpha.8
+ * @date 2024-04-01
+ * @version 2.1-alpha.9
  ***********************************************************************/
 
 #Requires AutoHotKey v2.0
@@ -13,10 +13,22 @@
  * @param {number} dec Quantidade de casas decimais retornadas
  * @returns {string} String formatada
  */
-milhar(num := 0, dec := 2)
+Milhar(num := 0, dec := 2)
 {
     IsNumber(num) || num := ToNum(num)
     return RegExReplace(StrReplace(Round(num, dec), '.', ','), '\G\d+?(?=(\d{3})+(?:\D|$))', '$0.')
+}
+
+/**
+ * Retorna uma string numérica no padrão brasileiro utilizando a API do Windows
+ * @param {number} num Número a ser convertido
+ * @returns {string} String formatada
+ */
+Milhar2(num)
+{
+    VarSetStrCapacity(&out, 260)
+    if DllCall('GetNumberFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
+        return out
 }
 
 /**
@@ -24,7 +36,7 @@ milhar(num := 0, dec := 2)
  * @param {string} str Número no padrão brasileiro. Ex. 1.234,56
  * @returns {number} Número nativo
  */
-ToNum(str := 0) => IsNumber(str) ? str : +StrReplace(StrReplace(str || 0, '.'), ',', '.')
+ToNum(str := 0) => +StrReplace(StrReplace(str || 0, '.'), ',', '.')
 
 /**
  * Retorna verdadeiro se o valor estiver entre o valor mínimo e o máximo
@@ -51,30 +63,33 @@ ConverterNumBancario(num)
 /**
  * Converte um número nativo em formato moeda com R$
  * Ex.: 12.35 -> R$ 12,35
- * @param {number}
+ * @param {number} num
  * @returns {string}
  */
-moeda(num)
+Moeda(num)
 {
     VarSetStrCapacity(&out, 260)
     if DllCall('GetCurrencyFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
         return out
 }
 
-
-NumBRDLL(num)
-{
-    VarSetStrCapacity(&out, 260)
-    if DllCall('GetNumberFormatEx', 'str', 'pt-BR', 'int', 0, 'str', num, 'int', 0, 'str', out, 'int', 260)
-        return out    
-}
-
+/**
+ * Converte um numero nativo AutoHotKey em formato brasileiro,
+ * apenas trocando o ponto decimal pela vírgula.
+ * @param {number} num Número ou string numérica
+ * @returns {string} String numérica
+ */
 NumBr(num)
 {
     IsNumber(num) || num := ToNum(num)
     return StrReplace(num, '.', ',')
 }
 
+/**
+ * Retorna a soma dos valores passados. Pode ser um número nativo ou string numérica
+ * @param {variadic} values Números ou strings numéricas
+ * @returns {string} String numérica
+ */
 Somar(values*)
 {
     sum := 0
@@ -83,8 +98,18 @@ Somar(values*)
    return milhar(sum)
 }
 
+/**
+ * Retorna a quantidade dos argumentos passados
+ * @param {Variadic} values Qualquer valor
+ * @returns {Integer}
+ */
 Contar(values*) => Values.Length
 
+/**
+ * Retorna o valor máximo dos argumentos da função
+ * @param {Variadic} values Números ou strings numéricas
+ * @returns {string} String numérica
+ */
 Maximo(values*)
 {
     arr := []
@@ -93,6 +118,11 @@ Maximo(values*)
     return milhar(Max(arr*))
 }
 
+/**
+ * Retorna o valor mínimo dos argumentos da função
+ * @param {Variadic} values Números ou strings numéricas
+ * @returns {string} String numérica
+ */
 Minimo(values*)
 {
     arr := []
@@ -101,6 +131,11 @@ Minimo(values*)
     return milhar(Min(arr*))
 }
 
+/**
+ * Retorna o valor médio dos argumentos da função
+ * @param {Variadic} values Números ou strings numéricas
+ * @returns {string} String numérica
+ */
 Media(values*)
 {
     sum := 0

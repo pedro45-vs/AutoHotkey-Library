@@ -1,8 +1,7 @@
 ﻿/************************************************************************
  * @description Funções diversas para trabalhar com datas
- * @file DataLib.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/21
+ * @date 2023-08-21
  * @version 2.0.5
  ***********************************************************************/
 #Requires AutoHotkey v2.0
@@ -257,3 +256,4 @@ isHoliday(date)
 
     return InStr(feriados, date)
 }
+

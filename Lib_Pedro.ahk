@@ -1,14 +1,15 @@
 ﻿/************************************************************************
  * @description Biblioteca com funções auxiliares ao script Pedro.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/23
- * @version 2.0.11
+ * @date 2024-03-08
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 AbrirClipBoard(*) => Notepad2('/c')
 AjusteCfopCst(*) => Run('\Conferir_arquivo_XML\Ajustar XML CFOP e CST inconsistentes.ahk')
 AlwaysOnTop(*) => WinSetAlwaysOnTop(-1, 'A')
-BlocoKZerado(*) => Run('Conferir_SPED_Fiscal\Inserir Bloco K zerado.ahk')
+BlocoHZerado(*) => Run('Conferir_SPED_Fiscal\InserirBlocoHzerado.ahk')
+BlocoKZerado(*) => Run('Conferir_SPED_Fiscal\InserirBlocoKzerado.ahk')
 BuscaCNPJ(*) => Run('Busca_CNPJ [fiscal].ahk')
 CalcClipBoard(*) => ClipTools(9)
 CalcDifal(*) => RunAct('Calculadora DIFAL.ahk', 'DIFAL Simplificado', 1)
@@ -17,8 +18,8 @@ CalcST(*) => RunAct('Calculadora ST.ahk', 'Calculadora ST simplificada', 1)
 CapturarClipBoard(*) => Notepad2('/b')
 ConfRecSpedFiscal(*) => Run('Conferir_SPED_Fiscal\Conferir Recibos SPED Fiscal.ahk')
 ConfSpedEsp(*) => Run('Conferir_SPED_Fiscal\SPED x Espelho NG [Entradas].ahk')
-ConfSpedFiscal(*) => Run('Conferir_SPED_Fiscal\Inconsistências SPED Fiscal.ahk')
-ConferirEspelho(*) => RunAct('Conferir_Espelho_Lançamento\Conferir Espelho Lançamento.ahk', 'Opções de validação', 1)
+ConfSpedFiscal(*) => Run(Format('{} "{}\Conferir_SPED_Fiscal\Inconsistências Sped Fiscal.ahk" "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
+ConferirEspelho(*) => Run('Conferir_Espelho_Lançamento\Super Conferencia Espelho.ahk')
 ConsultaCFOP(*) => RunAct('ConsultaCFOP [Rich].ahk', 'Consulta CFOP', 1)
 ConverterPDF(*) => Run('Converter PDF em Texto.ahk')
 DigClip(*) => (SetKeyDelay(20, 20), SendEvent(A_Clipboard))
@@ -46,10 +47,10 @@ FoldScan(*) => openfolder('\\srvrg-saas\rede\Scan')
 FoldScripts(*) => Run('\\srvrg-saas\rede\PEDRO\Scripts')
 FoldSintegrasClientes(*) => Run('\\srvrg-saas\rede\SINTEGRA - CLIENTES')
 FoldXML(*) => ('\\srvrg-saas\rede\PEDRO\XML')
+FormatarPlanilhaExcel(*) => Run('Automatizar_Excel\Formatar_tabela_Excel.ahk')
+FormatarSelecaoExcel(*) => Run(Format('{} {}\Automatizar_Excel\Formatar_tabela_Excel.ahk "{}"', A_AhkPath, A_WorkingDir, true))
 HelpAHK(*) => Run('C:\Program Files\AutoHotkey\v2\AutoHotkey.chm')
 ImpArquivosPDF(*) => Run(Format('{} {}\ImprimirArquivosPDF.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
-IncoSped(*) => Run('Conferir_SPED_Fiscal\Inconsistências Sped Fiscal.ahk')
-
 ;InlineCalc(*) =>  WinExist('Calculadora Inline ahk_class AutoHotkeyGUI') ?  WinClose() :  Run('Calculadora Inline.ahk')
 InsAspasDuplas(*) => ClipTools(2)
 InsAspasSimples(*) => ClipTools(1)
@@ -73,13 +74,14 @@ OpenScript(*) => ListVars()
 OpenSiare(*) => Run('"C:\Program Files\Google\Chrome\Application\chrome.exe" https://www2.fazenda.mg.gov.br/sol/')
 OpenSintegra(*) => Run('https://dfe-portal.svrs.rs.gov.br/NFE/CCC')
 PauseScript(*) => Pause(-1)
+PesqArq(*) => Run('Pesquisa em arquivos.ahk')
 ProtFiscal(*) => Run('Protocolos\Protocolo Fiscal.ahk')
 QuitApp(*) => Send('!{F4}')
 ReloadScript(*) => Reload()
 RemAspasParent(*) => ClipTools(8)
 RemoverPontuacao(*) => SendEvent(RegExReplace(A_Clipboard, '(*UCP)([^\w,]|R\$)'))
 RemoverQuebrasLinha(*) => SendEvent(RegExReplace(A_Clipboard, '[\n\r\t]|^\s*|\s+$|\s{2,}'))
-RenChave(*) => Run(Format('{} {}\RenomearChaveAcesso.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
+RenNotas(*) => Run(Format('{} {}\RenomearNotasFiscais.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
 RenPDF(*) => Run(Format('{} {}\Lib\RenomearPDF.ahk "{}"', A_AhkPath, A_WorkingDir, LastHwnd()))
 RunAgenda(*) => RunAct('ContatosGoogle.ahk', 'Agenda de Telefones', 1)
 RunEdge(*) => Run('C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe')
@@ -180,6 +182,13 @@ FecharExplorer(*)
     WinClose('ahk_group ExplorerGroup')
 }
 
+; Fecha todas as janelas do Notepad2 de uma vez
+FecharNotepad2(*)
+{
+    GroupAdd('Notepad2Group', 'ahk_class Notepad2')
+    WinClose('ahk_group Notepad2Group')
+}
+
 /**
  * Seleciona uma pasta com os XML em Downloads para movê-los
  * para a pasta temporária e apaga a pasta em seguida
@@ -261,13 +270,28 @@ AlternarAreaTrabalhoRemota(*)
 
 RenSped()
 {
-    if not select_file := FileSelect(3, '\\srvrg-saas\rede\PEDRO\Meus Arquivos Magnéticos', 'Selecione o arquivo Sped Fiscal', 'Arquivos de texto (*.txt)')
+    if not select_file := FileSelect(3, LastHwnd(), 'Selecione o arquivo SPED para ser renomeado', 'Todos os arquivos (*.*)')
         return
 
     col := StrSplit(FileOpen(select_file, 'r').ReadLine(), '|')
-    data := RegExReplace(col[5], '(\d{2})(\d{2})(\d{4})', '$3$2')
-    SplitPath(select_file, , &OutDir)
-    ren_file := Format('{}\SpedEFD-{}-{}-Remessa de arquivo {}-{}.txt', OutDir, col[8], col[11], col[4] ? 'substituto' : 'orignal', FormatTime(data, 'MMMyyyy'))
+    
+    ; Sped Fiscal
+    if col.Length = 17
+    {
+        data := RegExReplace(col[5], '(\d{2})(\d{2})(\d{4})', '$3$2')
+        SplitPath(select_file, , &OutDir)
+        ren_file := Format('{}\SpedEFD-{}-{}-Remessa de arquivo {}-{}.txt', OutDir, col[8], col[11], col[4] ? 'substituto' : 'original', FormatTime(data, 'MMMyyyy'))
+    }
+    ; Sped EFD-Contribuicoes
+    if col.Length = 16
+    {
+        data := RegExReplace(col[7], '(\d{2})(\d{2})(\d{4})', '$3$2')
+        SplitPath(select_file, , &OutDir)
+        ren_file := Format('{}\EFD-Contribuicoes-{}-Remessa de arquivo {}-{}.txt', OutDir, col[10], col[4] ? 'substituto' : 'original', FormatTime(data, 'MMMyyyy'))
+    }
+    if not ren_file ~= '\.txt$'
+        ren_file .= '.txt'
+    
     FileMove(select_file, ren_file)
 }
 

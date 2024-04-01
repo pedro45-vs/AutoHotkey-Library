@@ -1,8 +1,7 @@
 ﻿/************************************************************************
  * @description Converte TimeStamp AutoHotkey para o UnixTime e vice-versa
- * @file UnixTime.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/21
+ * @date 2023-08-21
  * @version 2.0.5
  ***********************************************************************/
 
@@ -32,3 +31,4 @@ TimeFromUnix(unix, formato := 'yyyy-MM-ddTHH:mm:ss')
 	date := DateAdd(date, -3, 'hours')
 	return FormatTime(date, formato)
 }
+

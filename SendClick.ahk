@@ -3,7 +3,6 @@
  * Permite acionamento sem que o mouse seja movido e funciona em janelas em segundo plano
  * As coordenadas são relativas ao controle e não a janela. É necessario calcular.
  * 0x0201 -> LButton Down, 0x0202 -> LButton Up, 0x0001 -> MousePressionado
- * @file SendClick.ahk
  * @author Pedro Henrique C. Xavier
  * @date 2023/09/27
  * @version 2.0.10

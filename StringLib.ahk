@@ -189,7 +189,7 @@ class PathSplit
 RegExMatchAll(haystack, needleRegEx, startingPosition := 1)
 {
 	reg := []
-	While startingPosition := RegExMatch(haystack, needleRegEx, &outputVar, startingPosition)
+	while startingPosition := RegExMatch(haystack, needleRegEx, &outputVar, startingPosition)
     {
 		reg.Push(outputVar)
         startingPosition += outputVar[0] ? StrLen(outputVar[0]) : 1
@@ -204,7 +204,7 @@ RegExMatchAll(haystack, needleRegEx, startingPosition := 1)
  */
 EscapeString(str)
 {
-    for esc, char in Map('\n', '`n', '\r','`r', '\t', '`t')
+    for esc, char in Map('\n', '`n', '\r', '`r', '\t', '`t')
         str := StrReplace(str, esc, char)
     return str
 }

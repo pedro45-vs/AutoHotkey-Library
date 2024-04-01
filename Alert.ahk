@@ -1,7 +1,7 @@
 ﻿/************************************************************************
 * @description Exibe uma janela de notificação com o texto desejado
 * @author Pedro Henrique C. Xavier
-* @date 2024/01/05
+* @date 2024-02-20
 * @version 2.1-alpha.8
 ***********************************************************************/
 
@@ -10,14 +10,14 @@
 /**
 * Exibe uma janela de notificação com o texto desejado.
 * @param string_alert string a ser exibida.
-* @param options string com o esquema de cores, o tempo em seguido da letra 'T' 
+* @param options string com o esquema de cores, o tempo em seguido da letra 'T'
 * e a letra 'N' indicando se é para exibir a janela no canto das notificações
 */
 Alert(string_alert, options := '')
 {
     ; Aguarda indefinidamente até que outra GUI do mesmo tipo seja fechada antes de exibir a atual
     WinWaitClose('alert_ahk ahk_class AutoHotkeyGUI')
-    
+
     ; Determina o esquema de cores para ser usado
     switch (RegExMatch(options, '[a-zA-Z]{2,}', &theme) ? theme[0] : 'info'), 'Locale'
     {
@@ -70,7 +70,7 @@ Alert(string_alert, options := '')
         GuiA.Move(A_ScreenWidth - s_width - 2)
         GuiA.Show('NoActivate')
         Y := SysGet(62) - 24
-        
+
         Loop s_height
             GuiA.Move(, Y--)
     }

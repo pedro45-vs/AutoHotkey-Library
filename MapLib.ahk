@@ -1,22 +1,22 @@
 ﻿/************************************************************************
  * @description Acrescenta métodos para os objetos do tipo Map
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/11
- * @version 2.0.11
+ * @date 2024-03-13
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
 
-Map.Prototype.Base := MapExtended()
+Map.Prototype.Base := MapExtended
 
 class MapExtended
 {
     ; Retorna a chave no índice especificado
-    key[index] => this.Keys[index]
+    static key[index] => this.Keys[index]
     ; Retorna uma array com as chaves do Map
-    keys => [this*]
+    static keys => [this*]
     ; Retorna o valor no índice especificado
-    value[index] => this.values[index]
+    static value[index] => this.values[index]
     ; Retorna uma array com os valores do Map
-    values => [this.__Enum(2).Bind(&_)*]
+    static values => [this.__Enum(2).Bind(&_)*]
 }

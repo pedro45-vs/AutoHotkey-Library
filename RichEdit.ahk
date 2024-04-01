@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description Controle RichEdit para criação e exibição de RichText
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/08
- * @version 2.0.11
+ * @date 2024-03-11
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -80,6 +80,12 @@ class RichEdit
         get => this.ITextDocument.Documentfont
         set => this.ITextDocument.Documentfont := value
     }
+    ; Tabulação padrão
+    DefaultTab
+    {
+        get => this.ITextDocument.DefaultTabStop
+        set => this.ITextDocument.DefaultTabStop := value
+    }
     /**
      * Retorna um handle para o controle RichText
      * @param {GuiObj} Gui
@@ -142,7 +148,7 @@ class RichEdit
      */
     Load(fileName, codePage := 1200) => this.ITextDocument.Open(fileName, 0, codePage)
     /**
-     * Salva o conteúdo do controle em arquivo
+     * Salva o conteúdo do controle em arquivo RTF
      * @param {string} FileName
      */
     Save(FileName := A_Desktop '\RichText.rtf')
@@ -197,9 +203,8 @@ class RichEdit
     AddTabs(tbLeader := this.tomSpaces, tabs*)
     {
         rng := this.ITextDocument.Range(this.end, this.end)
-        rng.Spacing := 1
+        rng.Spacing := 0.1
         rng.Para.ClearAllTabs()
-        this.Tabs := []
         for param in tabs
         {
             if A_Index & 1
@@ -214,7 +219,6 @@ class RichEdit
                     case 'd', 'decimal': tbAlign := this.tomAlignDecimal
                     default: tbAlign := this.tomAlignLeft
                 }
-                this.Tabs.Push([tbPos, tbAlign])
                 rng.Para.AddTab(tbPos, tbAlign, tbLeader)
             }
         }
@@ -383,4 +387,8 @@ class RichEdit
         }
         return f(4) << 16 | f(8) << 8 | f(0)
     }
+    /**
+     * Retorna o texto puro do controle
+     */
+    AllText() => this.ItextDocument.Range(0, this.end).Text
 }

@@ -1,8 +1,7 @@
 ﻿/************************************************************************
  * @description Extrai as principais informações do Extrato do Simples Nacional
- * @file ExtrairDadosExtrato.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/09/20
+ * @date 2023-09-20
  * @version 2.0.9
  ***********************************************************************/
 
@@ -45,3 +44,4 @@ ExtrairDadosExtrato(fileName)
         faturamentos: faturamentos
     }
 }
+

@@ -1,8 +1,8 @@
 /************************************************************************
  * @description Class para enviar e receber mensagens do Bot Telegram
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/25
- * @version 2.0.5
+ * @date 2024-03-04
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 /*
@@ -37,6 +37,17 @@ HTML suport
 <pre>pre-formatted fixed-width code block</pre>
 <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language</code></pre>
 */
+
+if A_LineFile = A_ScriptFullPath
+{
+    if not SelectFile := FileSelect(3, , 'Selecione o arquivo para enviar ao BOT')
+        return
+
+    if Telebot.SendFile(SelectFile) = 0
+        MsgBox('Arquivo enviado com sucesso', 'Iconi T1')
+    else
+        MsgBox('Erro ao enviar arquivo', 'IconX T1')
+}
 
 /**
  * Se comunica com meu Bot do Telegram

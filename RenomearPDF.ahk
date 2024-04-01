@@ -1,17 +1,18 @@
 ﻿/************************************************************************
  * @description Renomeia arquivos PDF diversos para melhor organização
  * @author Pedro Henrique C. Xavier
- * @date 2024-02-16
- * @version 2.1-alpha.8
+ * @date 2024-03-27
+ * @version 2.1-alpha.9
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
 #Include pdf2var.ahk
+#SingleInstance
 
 SetWorkingDir(A_LineFile '\..\..\.\data')
 
 NomeNorm := Map()
-Loop read 'obs_lista_ng.txt'
+Loop read 'EmpresasNG.txt'
 {
     col := StrSplit(A_LoopReadLine, '|')
     NomeNorm[col[2]] := Trim(col[1])
@@ -21,14 +22,18 @@ NomeMes := Map(), NomeMes.CaseSense := false
 NomeMes.Set('jan','01','fev','02','mar','03','abr','04','mai','05','jun','06',
             'jul','07','ago','08','set','09','out','10','nov','11','dez','12')
 
-NomeDarf := Map('8109', 'PIS', '6912', 'PIS', '2172', 'COFINS', '5856', 'COFINS',
-    '2089', 'IRPJ', '2372', 'CSLL', '1708', 'Ret IRRF', '5952', 'Ret PIS-COFINS-CSLL', '4805', 'Requisicao de Selos',
-    '1082', 'DARF Previdenciario', '1213', 'DARF Previdenciario', '1099', 'DARF Previdenciario', '4133', 'Div Ativa')
+NomeDarf := Map('8109', 'PIS LP', '6912', 'PIS LR', '2172', 'COFINS LP', '5856', 'COFINS LR',
+    '2089', 'IRPJ LP', '3373', 'IRPJ LR', '2372', 'CSLL LP', '6012', 'CSLL LR',
+    '1708', 'Ret IRRF', '5952', 'Ret PIS-COFINS-CSLL', '4805', 'Requisicao de Selos', 
+    '4133', 'Div Ativa', '1082', 'DARF Previdenciario',  '1213', 'DARF Previdenciario', 
+    '1099', 'DARF Previdenciario')
 
-NomeDAE := Map('0215-4', 'ICMS Frete', '0209-7', 'ICMS-ST Entradas', '0211-3', 'ICMS-ST Bebidas',
-    '0221-2', 'ICMS-ST Industria', '0326-9', 'Antecipação ICMS Comercio', '0327-7', 'Antecipação ICMS Industria',
+NomeDAE := Map('0215-4', 'ICMS Frete', '0209-7', 'ICMS-ST Entradas', 
+    '0211-3', 'ICMS-ST Bebidas', '0221-2', 'ICMS-ST Industria', 
+    '0326-9', 'Antecipação ICMS Comercio', '0327-7', 'Antecipação ICMS Industria',
     '0317-8', 'DIFAL', '0120-6', 'ICMS', '0112-3', 'ICMS', '0121-4', 'ICMS',
-    '0115-6', 'ICMS', '0806', 'ICMS', '0791', 'DIFAL', '2036', 'FECP', '0313-7', 'ICMS-ST Antecipado')
+    '0115-6', 'ICMS', '0806', 'ICMS', '0791', 'DIFAL', '2036', 'FECP', 
+    '0313-7', 'ICMS-ST Antecipado')
 
 /**
  * O script pode ser usado como biblioteca ou usado de forma stand-alone
@@ -43,11 +48,10 @@ if A_LineFile = A_ScriptFullPath
 
     for filename in select_files
     {
-        ToolTip filename
         if namepdf := ExtrairNomePDF(filename)
             RenomearArquivoPDF(filename, namepdf)
         else
-            MsgBox('Não foi possível extrair nome', 'Renomear PDF', '16 T2')
+            MsgBox('Não foi possível extrair nome da guia`n' filename, 'Renomear PDF', '16 T2')
     }
     MsgBox('Concluído', 'Renomear PDF', '64 T2')
 }
@@ -68,9 +72,6 @@ ExtrairNomePDF(filepath)
 
     if InStr(texto, 'Documento de Arrecadação de Receitas Federais')
         return ExtrairNomeDARF()
-        
-    else if InStr(texto, 'Documento de Arrecadação do Simples Nacional')
-        return ExtrairNomeDAS()
 
     else if InStr(texto, 'Imposto Sobre Serviços de Qualquer Natureza')
         return ExtrairNomeISS()
@@ -108,14 +109,26 @@ ExtrairNomePDF(filepath)
     else if InStr(texto, 'LIVRO REGISTRO DE ENTRADAS')
         return ExtrairLivroEntradas()
 
-    else if Instr(texto, 'LIVRO REGISTRO DE SAÍDAS')
+    else if InStr(texto, 'LIVRO REGISTRO DE SAÍDAS')
         return ExtrairLivroSaidas()
 
-    else if Instr(texto, 'Registro de Apuração do ICMS')
+    else if InStr(texto, 'Registro de Apuração do ICMS')
         return ExtrairLivroApuracaoICMS()
 
-    else if Instr(texto, 'Registro de Apuração do IPI')
+    else if InStr(texto, 'Registro de Apuração do IPI')
         return ExtrairLivroApuracaoIPI()
+
+    else if InStr(texto, 'RECIBO DE ENTREGA DA APURAÇÃO NO PGDAS-D')
+        return ExtrairReciboPGDAS()
+
+    else if InStr(texto, 'Programa Gerador do Documento de Arrecadação do Simples Nacional')
+        return ExtrairPGDAS()
+
+    else if InStr(texto, 'Documento de Arrecadação do Simples Nacional')
+        return ExtrairNomeDAS()
+        
+    else if InStr(texto, 'TERMO DE INTIMAÇÃO')
+        return ExtrairNomeIntimacaoECAC()
 
     else
         return false
@@ -221,7 +234,7 @@ ExtrairNomeDAE()
 
     BuscarCNPJ(insc)
     {
-        Loop read 'Conferencia_Empresas_NG.csv'
+        Loop read 'EmpresasNG.csv'
         {
             col := StrSplit(A_LoopReadLine, ';')
             if RegExReplace(insc, '\D') = RegExReplace(col[20], '\D')
@@ -240,9 +253,8 @@ ExtrairNomeDAEBahia()
 
 ExtrairLivroISSPrefeitura()
 {
-    pos := InStr(texto, 'Período'), RegExMatch(texto, '\d{2}\/\d{4}', &data, pos)
-    cnpj := RegExCNPJ(pos)
-    return NomeNorm.Get(cnpj, cnpj) A_Space 'Livro ISS Prefeitura' A_Space StrReplace(data[0], '/', '-')
+    data := RegExData(pos := InStr(texto, 'Período')), cnpj := RegExCNPJ(pos)
+    return NomeNorm.Get(cnpj, cnpj) A_Space 'Livro ISS Prefeitura' A_Space data
 }
 
 ExtrairLivroISS()
@@ -279,4 +291,22 @@ ExtrairExtratoPGDAS()
 {
     cnpj := RegExCNPJ(), RegExMatch(texto, 'Período de Apuração \(PA\): (\d{2}\/\d{4})', &data)
     return NomeNorm.Get(cnpj, cnpj) A_Space 'Extrato Simples Nacional' A_Space StrReplace(data[1], '/', '-')
+}
+
+ExtrairReciboPGDAS()
+{
+    cnpj := RegExCNPJ(), RegExMatch(texto, '(\d{2}\/\d{4})', &data, InStr(texto, 'Período de Apuração'))
+    return NomeNorm.Get(cnpj, cnpj) A_Space 'Recibo PGDAS' A_Space StrReplace(data[1], '/', '-')
+}
+
+ExtrairPGDAS()
+{
+    cnpj := RegExCNPJ(), data := RegExData()
+    return NomeNorm.Get(cnpj, cnpj) A_Space 'PGDAS' A_Space data
+}
+
+ExtrairNomeIntimacaoECAC()
+{
+    cnpj := RegExCNPJ(), RegExMatch(texto, '(\d\d\/)(\d\d)\/(\d\d\d\d)', &data)
+    return NomeNorm.Get(cnpj, cnpj) A_Space 'Intimacao eCAC' A_Space StrReplace(data[0], '/', '-')
 }

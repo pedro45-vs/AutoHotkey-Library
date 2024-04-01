@@ -1,8 +1,7 @@
 ﻿/************************************************************************
  * @description Retorna um objeto com as principais propriedades da guia
- * @file ExtrairDadosGuias.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/09/20
+ * @date 2023-09-20
  * @version 2.0.9
  ***********************************************************************/
 
@@ -16,7 +15,7 @@
  * @prop {string} valorGuia valor da Guia
  * @prop {timestamp} competencia data da competencia em formato AAAAMM para facilitar a formatação com FormatTime
  * @prop {string} vencimento em formato DD/MM/AAAA com o vencimento da guia
- * @prop {string} cnpj o CNPJ. No caso de DAEs, é feito a correspondência com Conferencia_Empresas_NG.csv
+ * @prop {string} cnpj o CNPJ. No caso de DAEs, é feito a correspondência com EmpresasNG.csv
  * @prop {string} nomeGuia o nome da guia de acordo com o dicionário
  */
 ExtrairDadosGuias(filename)
@@ -292,7 +291,7 @@ FindNomeDarf(coddarf)
 FindIECNPJ(strIE)
 {
     strIE := RegExReplace(strIE, '\D')
-    Loop read A_LineFile '\..\..\data\Conferencia_Empresas_NG.csv'
+    Loop read A_LineFile '\..\..\data\EmpresasNG.csv'
     {
         str := RegexReplace(A_LoopReadLine, '\D')
         if InStr(str, strIE)

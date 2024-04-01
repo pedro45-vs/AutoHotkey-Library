@@ -1,9 +1,8 @@
 ﻿/************************************************************************
  * @description Cria um contador para calculo de benchmark
- * @file Count.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/21
- * @version 2.0.5
+ * @date 2024-03-27
+ * @version 2.1-alpha.9
  ***********************************************************************/
 #Requires AutoHotkey v2.0
 
@@ -15,12 +14,11 @@
  */
 class count
 {
-	static CounterBefore := 0, CounterAfter := 0, freq := 0
 	static value
 	{
 		get {
 			DllCall('QueryPerformanceCounter', 'Int64*', &CounterAfter := 0)
-			return Round((CounterAfter - this.CounterBefore) / this.freq * 1000)
+			return Round((CounterAfter - this.CounterBefore) / this.freq * 1000, 4)
 		}
 	}
 	; Inicia o contador

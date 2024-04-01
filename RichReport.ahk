@@ -1,8 +1,8 @@
 ﻿/************************************************************************
  * @description GUI com o controle RichEdit para relatórios RichText
  * @author Pedro Henrique C. Xavier
- * @date 2024/01/24
- * @version 2.0.11
+ * @date 2024-03-11
+ * @version 2.1-alpha.8
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -15,7 +15,7 @@ class RichReport extends RichEdit
     __New(value?)
     {
         prevIconFile := A_IconFile, prevIconNumber := A_IconNumber
-        TraySetIcon(A_LineFile '\..\..\icons\report.ico')
+        TraySetIcon('shell32', 2)
         this.GuiR := Gui('Resize', 'RichReport: ' A_ScriptName)
         (prevIconFile) && TraySetIcon(prevIconFile, prevIconNumber)
         this.GuiR.OnEvent('Size', (o, m, w, h) => this.Ctrl.Move(,, w, h))
@@ -55,11 +55,13 @@ class RichReport extends RichEdit
     List(arr_list)
     {
         for item in IsObject(arr_list) ? arr_list : StrSplit(RTrim(arr_list, '`n'), '`n')
-            str_list .= Format('`t{}.  {}`n', A_Index, item)
+            str_list .= Format('`t{}.`t{}`n', A_Index, item)
 
         rng := this.ITextDocument.Range(this.end, this.end)
         rng.Para.ClearAllTabs()
-        rng.Para.AddTab(20, this.tomAlignLeft, this.tomSpaces)
+        rng.Spacing := 0.1
+        rng.Para.AddTab(40, this.tomAlignRight, this.tomSpaces)
+        rng.Para.AddTab(50, this.tomAlignLeft, this.tomSpaces)
         rng.text := str_list
         rng.SetLineSpacing(tomLineSpaceAtLeast := 3, 18)
         this.End := rng.End
@@ -71,11 +73,12 @@ class RichReport extends RichEdit
      * @param {array} width array com valores de largura para cada coluna
      * @param {array} align array com strings para o alinhamento de coluna
      */
-    Table(table_array, width, align := [])
+    Table(table_array, width := [], align := [])
     {
         nCols := table_array[1].length, twips := 15, color := this.Gray[6]
         SetAlign := Map(), SetAlign.CaseSense := false
         SetAlign.Set('l', this.tomAlignLeft, 'c', this.tomAlignCenter, 'r', this.tomAlignRight)
+        width.Length := nCols, width.Default := 180
         align.Length := nCols, align.Default := 'l'
 
         this.Ctrl.Move(, , 60)

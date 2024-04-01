@@ -1,8 +1,7 @@
-/************************************************************************
+﻿/************************************************************************
  * @description Converte string ou arquivo para Base64 e vice-versa
- * @file Base64.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/21
+ * @date 2023-08-21
  * @version 2.0.5
  ***********************************************************************/
 #Requires AutoHotKey v2.0
@@ -112,5 +111,6 @@ Base64Encode(s) {
    ; Returns an AutoHotkey native string.
    return str
 }
+
 
 

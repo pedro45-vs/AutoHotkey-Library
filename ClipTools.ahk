@@ -1,8 +1,7 @@
 ﻿/************************************************************************
  * @description Ferramentas para alterar o conteúdo do ClipBoard
- * @file ClipTools.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/21
+ * @date 2023-08-21
  * @version 2.0.5
  ***********************************************************************/
 #Requires AutoHotkey v2.0
@@ -38,3 +37,4 @@ ClipTools(tool)
     ClipWait(1)
     Send('^v')
 }
+

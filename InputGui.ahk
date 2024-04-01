@@ -1,9 +1,8 @@
-/************************************************************************
+﻿/************************************************************************
  * @description Exibe uma Gui para inserir dados do ClipBoard
  * Fiz isso porque o InputBox bloqueia a thread enquanto está ativa
- * @file InputGui.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/23
+ * @date 2023-08-23
  * @version 2.0.5
  ***********************************************************************/
 
@@ -35,3 +34,4 @@ InputGui(coord?)
 		GuiI.Destroy()
 	}
 }
+

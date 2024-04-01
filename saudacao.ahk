@@ -1,8 +1,7 @@
 ﻿/************************************************************************
  * @description Retorna a saudação apropriada conforme a hora do dia
- * @file saudacao.ahk
  * @author Pedro Henrique C Xavier
- * @date 2023/08/22
+ * @date 2023-08-22
  * @version 2.0.5
  ***********************************************************************/
 

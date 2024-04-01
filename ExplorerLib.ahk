@@ -1,9 +1,8 @@
 ﻿/************************************************************************
  * @description Biblioteca com funções para uso no Windows Explorer
- * @file Explorer.ahk
  * @author Pedro Henrique C. Xavier
- * @date 2023/08/25
- * @version 2.0.5
+ * @date 2024-03-26
+ * @version 2.1-alpha.9
  ***********************************************************************/
 
 #Requires AutoHotkey v2.0
@@ -31,6 +30,7 @@ GetExplorerPath(ActiveHwnd)
         }
     }
 }
+
 /**
  * Abre uma pasta do explorer e a coloca em primeiro plano
  * @param {string} path pasta do explorer
@@ -43,6 +43,7 @@ openfolder(path)
     WinWait(tit, , 1)
     WinActivate(tit)
 }
+
 /**
  * Executa e ativa um programa ou script opcionalmente movendo-o para
  * O monitor em que o mouse se encontra
@@ -76,6 +77,7 @@ RunAct(program, WinTitle:='', Move:=false)
 		WinMove(movX,movY,,, WinMatch)
     }
 }
+
 /**
  * Resolve os caminhos relativos em absolutos
  * @param {string} relative_path
@@ -86,8 +88,21 @@ PathCanonicalize(relative_path)
     if DllCall('shlwapi\PathCanonicalize', 'str', out, 'str', relative_path)
         return out
 }
+
 /**
  * Chega se uma pasta está vazia ou não
  * @param {string} path
  */
 PathIsDirectoryEmpty(path) => DllCall('shlwapi\PathIsDirectoryEmpty', 'str', path)
+
+/**
+ * Cria um nome de arquivo exclusivo com base em um nome de arquivo existente.
+ * @param {string} filepath
+ */
+PathUnique(filepath)
+{
+    VarSetStrCapacity(&out, 260)
+    DllCall('Kernel32\GetFullPathName', 'str', filepath, 'uint', 260, 'str', out, 'ptr',0)
+    DllCall('Shell32\PathYetAnotherMakeUniqueName', 'str', out, 'str', out, 'ptr', 0, 'ptr', 0)
+    Return out
+}
